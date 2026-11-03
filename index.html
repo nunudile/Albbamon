@@ -391,7 +391,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-2">
               <div id="move1CostWrapper" class="sm:col-span-1">
                 <label class="block text-xs font-bold text-slate-600 mb-1">에너지 기호</label>
-                <input id="move1Cost" type="text" value="🔥" maxlength="6" class="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="비우면 생략">
+                <input id="move1Cost" type="text" value="🔥" maxlength="16" class="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="비우면 생략">
               </div>
               <div id="move1NameWrapper" class="sm:col-span-2">
                 <label id="move1NameLabel" class="block text-xs font-bold text-slate-600 mb-1">기술 이름</label>
@@ -419,7 +419,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-2">
               <div class="sm:col-span-1">
                 <label class="block text-xs font-bold text-slate-600 mb-1">에너지 기호</label>
-                <input id="move2Cost" type="text" value="🔥🔥✶" maxlength="6" class="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="비우면 생략">
+                <input id="move2Cost" type="text" value="🔥🔥✶" maxlength="16" class="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="비우면 생략">
               </div>
               <div class="sm:col-span-2">
                 <label class="block text-xs font-bold text-slate-600 mb-1">기술 이름</label>
@@ -2693,6 +2693,9 @@
         const m1Name = move1NameInput.value || '';
         const isAbility = isMove1AbilityInput && isMove1AbilityInput.checked;
 
+        // 4개 에너지 기호까지 안전하게 수용하는 일관된 고정 오프셋 기준점 (130px)
+        const FIXED_MOVE_NAME_OFFSET = 130;
+
         ctx.textAlign = 'left';
 
         if (isAbility) {
@@ -2715,7 +2718,7 @@
 
           ctx.fillStyle = '#dc2626';
           ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
-          ctx.fillText(m1Name, attackTextLeft + 105, m1Y + 22);
+          ctx.fillText(m1Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m1Y + 22);
         } else {
           if (m1Cost) {
             ctx.fillStyle = '#0f172a';
@@ -2723,7 +2726,7 @@
             ctx.fillText(m1Cost, attackTextLeft, m1Y + 22);
 
             ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
-            ctx.fillText(m1Name, attackTextLeft + 105, m1Y + 22);
+            ctx.fillText(m1Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m1Y + 22);
           } else {
             ctx.fillStyle = '#0f172a';
             ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
@@ -2759,7 +2762,7 @@
           ctx.fillText(m2Cost, attackTextLeft, m2Y + 22);
 
           ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
-          ctx.fillText(m2Name, attackTextLeft + 105, m2Y + 22);
+          ctx.fillText(m2Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m2Y + 22);
         } else {
           ctx.fillStyle = '#0f172a';
           ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
