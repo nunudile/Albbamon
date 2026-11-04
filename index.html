@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>알빠몬 카드 메이커</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- JSZip 라이브러리: 덱 이미지 일괄 압축 다운로드용 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,21 +15,6 @@
     }
     .card-font {
       font-family: 'Gowun Dodum', 'Noto Sans KR', sans-serif;
-    }
-    /* 커스텀 스크롤바 */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
     }
   </style>
 </head>
@@ -44,7 +28,7 @@
         </div>
         <div>
           <h1 class="text-lg sm:text-xl font-black tracking-tight text-slate-900 leading-none">알빠몬 카드 메이커</h1>
-          <p class="text-xs text-slate-500 font-medium mt-0.5">나만의 오리지널 카드를 실시간 제작 & 덱 빌더 & 300 DPI 다운로드</p>
+          <p class="text-xs text-slate-500 font-medium mt-0.5">나만의 오리지널 카드를 실시간 제작 & 300 DPI PNG 다운로드</p>
         </div>
       </div>
       <div class="hidden sm:flex items-center gap-2">
@@ -65,7 +49,7 @@
   </header>
 
   <!-- Main Container -->
-  <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+  <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
       <!-- LEFT: Form Controls (7 cols on lg) -->
@@ -73,7 +57,7 @@
         
         <!-- Basic Info & Border Color -->
         <div>
-          <!-- 1. 카드 대분류 (알빠몬 vs 트레이너스 vs 에너지) -->
+          <!-- 1. 카드 대분류 -->
           <div class="mb-5 pb-4 border-b border-slate-100">
             <div class="flex items-center justify-between mb-2">
               <label class="text-xs font-black tracking-wide text-slate-800 uppercase flex items-center gap-1.5">
@@ -103,7 +87,6 @@
             <div>
               <div class="flex items-center justify-between mb-1">
                 <label class="block text-xs font-bold text-slate-700">카드 이름</label>
-                <!-- 트레이너의 알빠몬 체크박스 -->
                 <label id="trainerAlbbamonLabel" class="flex items-center gap-1 cursor-pointer select-none text-[11px] font-bold text-indigo-600 hover:text-indigo-700 transition">
                   <input id="isTrainerAlbbamon" type="checkbox" class="w-3.5 h-3.5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
                   <span>트레이너의 알빠몬</span>
@@ -111,7 +94,6 @@
               </div>
               <input id="cardName" type="text" value="김예지" maxlength="75" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="카드 이름을 입력하세요">
               
-              <!-- 트레이너명 입력창 (체크 시 표시) -->
               <div id="trainerNameWrapper" class="hidden mt-2 flex items-center gap-2 p-2 bg-indigo-50/70 border border-indigo-200 rounded-lg">
                 <span class="text-xs font-bold text-indigo-800 shrink-0">트레이너 이름:</span>
                 <input id="trainerPrefix" type="text" value="예지" maxlength="10" class="w-full px-2.5 py-1 text-xs bg-white border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-indigo-900" placeholder="예: 지우, 난천, N">
@@ -119,13 +101,13 @@
               </div>
             </div>
 
-            <!-- HP (체력) -->
+            <!-- HP (체력 - 5자리까지 지원) -->
             <div id="cardHpContainer">
               <label class="block text-xs font-bold text-slate-700 mb-1">HP (체력 - 비워두면 숨김)</label>
-              <input id="cardHp" type="text" value="70" maxlength="4" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="예: 120 (비워두면 숨김)">
+              <input id="cardHp" type="text" value="70" maxlength="5" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="예: 120 (비워두면 숨김)">
             </div>
 
-            <!-- 알빠몬 전용 타입 선택 (광기 / 우울 / 순수) -->
+            <!-- 알빠몬 전용 타입 선택 -->
             <div id="albbamonTypeSelector" class="sm:col-span-2">
               <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                 <span>알빠몬 타입 (속성 심볼)</span>
@@ -144,9 +126,8 @@
               </div>
             </div>
 
-            <!-- 카드 세부 분류 영역 -->
+            <!-- 세부 분류 영역 -->
             <div class="sm:col-span-2">
-              <!-- 알빠몬 전용 진화 단계 퀵 버튼 -->
               <div id="albbamonStageButtons" class="mb-3">
                 <label class="block text-xs font-bold text-slate-700 mb-1.5">알빠몬 세부 분류 선택</label>
                 <div class="grid grid-cols-3 gap-2">
@@ -162,7 +143,6 @@
                 </div>
               </div>
 
-              <!-- 트레이너스 전용 세부 분류 퀵 버튼 -->
               <div id="trainerStageButtons" class="mb-3 hidden">
                 <label class="block text-xs font-bold text-slate-700 mb-1.5">트레이너스 세부 분류 선택</label>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -181,7 +161,6 @@
                 </div>
               </div>
 
-              <!-- 세부 분류 직접 입력창 및 ex 체크박스 -->
               <label class="block text-xs font-bold text-slate-700 mb-1">카드 세부 분류 (직접 수정 가능)</label>
               <div class="flex items-center gap-2">
                 <input id="cardSub" type="text" value="기본 알빠몬" maxlength="15" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="예: 기본 알빠몬 / 서포트 / 기본 에너지">
@@ -191,7 +170,6 @@
                 </label>
               </div>
 
-              <!-- 진화 전 알빠몬 입력창 (1진화/2진화 시 표시) -->
               <div id="preEvoWrapper" class="hidden mt-2 flex items-center gap-2 p-2 bg-blue-50/70 border border-blue-200 rounded-lg">
                 <span class="text-xs font-bold text-blue-800 shrink-0">진화 전 알빠몬:</span>
                 <input id="preEvoName" type="text" value="피츄" maxlength="15" class="w-full px-2.5 py-1 text-xs bg-white border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-blue-900" placeholder="예: 피츄, 파이리 등">
@@ -263,7 +241,6 @@
                   <span id="textureStatusLabel" class="text-[11px] text-slate-400 font-medium">선택된 텍스처 없음</span>
                 </div>
 
-                <!-- 텍스처 투명도 슬라이더 -->
                 <div class="space-y-1">
                   <div class="flex items-center justify-between text-xs">
                     <span class="font-bold text-slate-600">텍스처 투명도 (불투명도)</span>
@@ -272,7 +249,6 @@
                   <input id="textureOpacity" type="range" min="0" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
                 </div>
 
-                <!-- 텍스처 혼합(블렌드) 모드 -->
                 <div class="grid grid-cols-2 gap-2 pt-1">
                   <div>
                     <label class="block text-[11px] font-bold text-slate-600 mb-1">혼합 모드(Blend Mode)</label>
@@ -344,7 +320,6 @@
               </button>
             </div>
 
-            <!-- 중앙 프레임 배경 이미지 커스텀 구역 -->
             <div id="frameBgWrapper" class="pt-2 border-t border-slate-100 flex items-center gap-3">
               <label for="frameBgUpload" class="cursor-pointer inline-flex items-center gap-2 px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold transition active:scale-95 shadow">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -358,10 +333,9 @@
                 프레임 배경 초기화
               </button>
             </div>
-            <p id="artTypeGuide" class="text-xs text-slate-500">※ 일반: 중앙 지정 규격에 맞춰 크기가 조정됩니다. 배경 업로드 시 캐릭터 뒤에 합성됩니다.</p>
+            <p id="artTypeGuide" class="text-xs text-slate-500">※ 일반: 중앙 지정 규격에 맞춰 크기가 조정됩니다. 배경 업로드 시 캐릭터 뒤에 합성되며, 투명 PNG 일러스트를 올리면 더욱 자연스럽습니다.</p>
           </div>
 
-          <!-- 뒷면 일러스트 설정 구역 -->
           <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
             <label class="block text-xs font-bold text-slate-700">카드 뒷면 일러스트 커스텀</label>
             <div class="flex items-center gap-3">
@@ -373,10 +347,10 @@
               </label>
               <input id="backImageUpload" type="file" accept="image/*" class="hidden">
               <button id="resetBackImageBtn" type="button" class="text-xs text-slate-500 hover:text-rose-600 font-semibold underline transition">
-                기본 골드 아르데코 뒷면으로 복구
+                기본 골드 뒷면으로 복구
               </button>
             </div>
-            <p class="text-[11px] text-slate-400">※ 기본 뒷면은 'ALBBAMON CARD GAME' 골드 아르데코 디자인이 적용되어 있습니다.</p>
+            <p class="text-[11px] text-slate-400">※ 기본 뒷면은 ALBBAMON CARD GAME 공식 골드 아르데코 디자인입니다.</p>
           </div>
         </div>
 
@@ -420,7 +394,7 @@
             <h2 class="text-sm font-extrabold text-slate-800 flex items-center justify-between mb-3">
               <span class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
-                기술 2 (대형 기술)
+                기술 2 (필살기 / 대형 기술)
               </span>
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-2">
@@ -479,11 +453,11 @@
           <div id="statusInputGrid" class="grid grid-cols-3 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">약점</label>
-              <input id="weakness" type="text" value="🍀 ×2" maxlength="10" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="비우면 공란">
+              <input id="weakness" type="text" value="🍀×2" maxlength="10" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="비우면 공란">
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">저항력 (비우면 공란)</label>
-              <input id="resistance" type="text" value="🌀 -30" maxlength="10" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="비우면 공란">
+              <label class="block text-xs font-bold text-slate-700 mb-1">저항력</label>
+              <input id="resistance" type="text" value="" maxlength="10" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="비우면 공란">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">후퇴</label>
@@ -521,18 +495,8 @@
           </div>
         </div>
 
-        <!-- 카드 생성 및 덱 추가 버튼 (핵심 액션) -->
-        <div class="pt-2">
-          <button id="addCardToDeckBtn" type="button" class="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-black rounded-xl shadow-lg transition active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base border border-indigo-500/30">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-            </svg>
-            현재 카드를 선택한 덱에 추가 (+1장)
-          </button>
-        </div>
-
         <!-- Download Action Button -->
-        <div class="pt-1 space-y-2.5">
+        <div class="pt-2 space-y-2.5">
           <button id="downloadBtn" type="button" class="w-full py-3 px-6 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 font-extrabold rounded-xl shadow-md transition active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -541,7 +505,7 @@
           </button>
           
           <button id="downloadBleedBtn" type="button" class="w-full py-3 px-6 bg-gradient-to-r from-indigo-600 via-blue-600 to-sky-600 hover:from-indigo-700 hover:to-blue-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
             </svg>
             재단용 2mm 도련 포함 PNG 다운로드 (67 × 92 mm, 300 DPI)
@@ -551,8 +515,8 @@
 
       </section>
 
-      <!-- RIGHT: Preview Canvas (5 cols on lg) -->
-      <section class="lg:col-span-5 flex flex-col items-center">
+      <!-- RIGHT: Preview Canvas & Deck Manager (5 cols on lg) -->
+      <section class="lg:col-span-5 flex flex-col items-center gap-6">
         <div class="sticky top-20 w-full flex flex-col items-center">
           <div class="flex items-center justify-between w-full mb-2 px-1">
             <span class="text-xs font-bold tracking-wider text-slate-500 uppercase">카드 미리보기</span>
@@ -566,8 +530,8 @@
             </div>
           </div>
 
-          <!-- Canvas Container (5mm 귀도리 R=34px 프리뷰 적용) -->
-          <div class="w-full max-w-[420px] bg-slate-200/50 p-3 sm:p-4 rounded-[40px] border border-slate-300 shadow-xl flex items-center justify-center">
+          <!-- Canvas Container (5mm R5 귀도리에 맞춘 rounded-[34px]) -->
+          <div class="w-full max-w-[420px] bg-slate-200/50 p-3 sm:p-4 rounded-3xl border border-slate-300 shadow-xl flex items-center justify-center">
             <canvas id="cardCanvas" width="750" height="1050" class="w-full h-auto rounded-[34px] shadow-2xl block"></canvas>
           </div>
 
@@ -581,185 +545,281 @@
             </button>
           </div>
 
-          <div class="mt-3 flex items-center justify-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-xl text-blue-800 text-xs font-bold shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            <span>인쇄 규격 300 DPI (1500 × 2100 px) & 5mm 귀도리 정밀 대응</span>
+          <!-- Add to Deck Button -->
+          <div class="w-full max-w-[420px] mt-4">
+            <button id="addCardToDeckBtn" type="button" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold rounded-2xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>현재 카드를 덱에 담기</span>
+            </button>
           </div>
+
+          <!-- Deck Management Box -->
+          <div class="w-full max-w-[420px] mt-5 bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span>
+                <h3 class="text-sm font-black text-slate-800">덱 보관함 (Deck Builder)</h3>
+              </div>
+              <span id="deckCountBadge" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-50 text-blue-700 border border-blue-200">
+                0 / 60장
+              </span>
+            </div>
+
+            <!-- Deck Selector & Actions -->
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <select id="deckSelect" class="w-full px-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <!-- Populated by JS -->
+                </select>
+                <button id="newDeckBtn" type="button" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold shrink-0 transition" title="새 덱 만들기">
+                  + 새 덱
+                </button>
+              </div>
+
+              <!-- Deck Operation Toolbar -->
+              <div class="flex items-center justify-between text-[11px] text-slate-500 px-0.5 flex-wrap gap-1">
+                <div class="flex items-center gap-2">
+                  <button id="editDeckNameBtn" type="button" class="hover:text-indigo-600 font-bold underline transition">이름 변경</button>
+                  <span>•</span>
+                  <button id="setDeckCapacityBtn" type="button" class="hover:text-indigo-600 font-bold underline transition">목표 장수 설정</button>
+                  <span>•</span>
+                  <button id="clearDeckBtn" type="button" class="hover:text-rose-600 font-bold underline transition">덱 비우기</button>
+                  <span>•</span>
+                  <button id="deleteDeckBtn" type="button" class="hover:text-rose-600 font-bold underline transition">덱 삭제</button>
+                </div>
+              </div>
+
+              <!-- Backup / Share Toolbar -->
+              <div class="pt-2 flex items-center justify-between gap-1.5 border-t border-slate-100">
+                <button id="saveDeckFileBtn" type="button" class="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1">
+                  <span>💾</span> 덱 백업
+                </button>
+                <button id="loadDeckFileTrigger" type="button" class="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1">
+                  <span>📂</span> 덱 복원
+                </button>
+                <input id="loadDeckFileInput" type="file" accept=".json" class="hidden">
+                <button id="shareDeckBtn" type="button" class="flex-1 py-1.5 px-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1">
+                  <span>🔗</span> 덱 공유
+                </button>
+              </div>
+            </div>
+
+            <!-- Deck Card List -->
+            <div id="deckCardList" class="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Batch Download ZIP Button -->
+            <div class="pt-2 border-t border-slate-100">
+              <button id="batchDownloadZipBtn" type="button" class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-700 hover:to-blue-700 text-white font-black rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>덱 이미지 일괄 ZIP 다운로드 (일반 + 2mm 도련)</span>
+              </button>
+              <p class="text-[10px] text-slate-400 text-center mt-1">※ 덱에 담긴 모든 카드를 300 DPI 초고해상도로 일괄 렌더링하여 ZIP 압축 파일로 다운로드합니다.</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
     </div>
-
-    <!-- BOTTOM DECK BUILDER SECTION -->
-    <section class="bg-white rounded-3xl p-5 sm:p-7 shadow-sm border border-slate-200 space-y-6">
-      <!-- 덱 헤더 & 컨트롤 바 -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-        <div>
-          <div class="flex items-center gap-2.5">
-            <div class="w-3 h-3 rounded-full bg-indigo-600"></div>
-            <h2 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">덱(Deck) 보관함 & 빌더</h2>
-            <span id="deckCountBadge" class="px-2.5 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 font-extrabold text-xs rounded-full">
-              0 / 60장
-            </span>
-          </div>
-          <p class="text-xs text-slate-500 mt-1">제작한 카드를 담고 수량을 조절하여 나만의 오리지널 카드 덱을 완성하세요.</p>
-        </div>
-
-        <!-- 덱 선택 및 조작 버튼 그룹 -->
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- 덱 선택 셀렉트박스 -->
-          <div class="relative min-w-[150px]">
-            <select id="deckSelect" class="w-full appearance-none bg-slate-50 border border-slate-300 hover:border-slate-400 text-slate-800 text-xs sm:text-sm font-bold py-2 pl-3 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-              <!-- JS 동적 생성 -->
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </div>
-          </div>
-
-          <!-- 새 덱 생성 버튼 -->
-          <button id="newDeckBtn" type="button" class="inline-flex items-center gap-1 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl border border-indigo-200 transition active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-            </svg>
-            새 덱
-          </button>
-
-          <!-- 덱 목표 장수 설정 버튼 -->
-          <button id="setDeckCapacityBtn" type="button" class="inline-flex items-center gap-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition active:scale-95" title="이 덱의 최대/목표 장수를 변경합니다">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            목표 장수 설정
-          </button>
-
-          <!-- 덱 이름 변경 버튼 -->
-          <button id="renameDeckBtn" type="button" class="inline-flex items-center gap-1 px-2.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition active:scale-95">
-            이름 변경
-          </button>
-
-          <!-- 덱 비우기 버튼 -->
-          <button id="clearDeckBtn" type="button" class="inline-flex items-center gap-1 px-2.5 py-2 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-bold rounded-xl border border-slate-200 transition active:scale-95">
-            비우기
-          </button>
-
-          <!-- 덱 삭제 버튼 -->
-          <button id="deleteDeckBtn" type="button" class="inline-flex items-center gap-1 px-2.5 py-2 bg-slate-100 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl border border-rose-200 transition active:scale-95">
-            삭제
-          </button>
-        </div>
-      </div>
-
-      <!-- 덱 파일 저장/불러오기 & 일괄 다운로드 & 공유 툴바 -->
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-        <!-- 덱 저장 / 불러오기 / 공유 그룹 -->
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- 덱 파일 저장 버튼 -->
-          <button id="exportDeckJsonBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold rounded-xl border border-slate-300 shadow-sm transition active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-            </svg>
-            💾 덱 파일 저장 (.json)
-          </button>
-
-          <!-- 덱 파일 불러오기 버튼 -->
-          <label for="importDeckJsonInput" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold rounded-xl border border-slate-300 shadow-sm transition active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            📂 덱 파일 불러오기
-          </label>
-          <input id="importDeckJsonInput" type="file" accept=".json" class="hidden">
-
-          <!-- 덱 공유 버튼 -->
-          <button id="shareDeckBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl border border-indigo-200 shadow-sm transition active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-            </svg>
-            🔗 덱 공유 (링크/코드)
-          </button>
-
-          <!-- 덱 코드 입력(불러오기) 버튼 -->
-          <button id="importDeckCodeBtn" type="button" class="inline-flex items-center gap-1 px-2.5 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-300 shadow-sm transition active:scale-95">
-            📋 덱 코드 입력
-          </button>
-        </div>
-
-        <!-- 덱 이미지 일괄 압축 ZIP 다운로드 버튼 -->
-        <button id="batchDownloadZipBtn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-md transition active:scale-95">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-          </svg>
-          📦 덱 이미지 일괄 ZIP 다운로드 (일반 + 2mm 도련)
-        </button>
-      </div>
-
-      <!-- 덱 내 카드 리스트 그리드 -->
-      <div id="deckCardGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 min-h-[160px] p-2">
-        <!-- JS 동적 렌더링 -->
-      </div>
-    </section>
   </main>
 
-  <!-- 커스텀 모달 (브라우저 내장 prompt/confirm 차단 환경 완벽 호환) -->
-  <div id="customModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 space-y-4 animate-scaleIn">
-      <div class="flex items-center gap-3">
-        <div id="modalIcon" class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 text-lg font-black shrink-0">
-          ⚙️
-        </div>
-        <div>
-          <h3 id="modalTitle" class="text-base font-black text-slate-900">모달 제목</h3>
-          <p id="modalSubtitle" class="text-xs text-slate-500 mt-0.5">안내 문구</p>
-        </div>
+  <!-- Modal Container -->
+  <div id="customModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl border border-slate-200 space-y-4">
+      <h3 id="modalTitle" class="text-base font-black text-slate-800">모달 제목</h3>
+      <div id="modalBody" class="space-y-2 text-xs text-slate-600">
+        <!-- Injected via JS -->
       </div>
-      
-      <div id="modalBody" class="space-y-2">
-        <input id="modalInput" type="text" class="hidden w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
-        <textarea id="modalTextarea" rows="4" class="hidden w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono resize-none"></textarea>
-      </div>
-
       <div class="flex items-center justify-end gap-2 pt-2">
-        <button id="modalCancelBtn" type="button" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition">
-          취소
-        </button>
-        <button id="modalConfirmBtn" type="button" class="px-4 py-2 text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow transition active:scale-95">
-          확인
-        </button>
+        <button id="modalCancelBtn" type="button" class="px-3.5 py-1.5 text-xs font-bold rounded-lg text-slate-500 hover:bg-slate-100 transition">취소</button>
+        <button id="modalConfirmBtn" type="button" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow transition">확인</button>
       </div>
     </div>
   </div>
 
-  <!-- 비동기 진행률 모달 (ZIP 압축 생성용) -->
-  <div id="progressModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 text-center space-y-4">
-      <div class="w-12 h-12 mx-auto rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 animate-spin">
-        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-        </svg>
+  <!-- Progress Bar Modal (Batch ZIP) -->
+  <div id="progressModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
+      <div class="w-12 h-12 mx-auto rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xl animate-bounce">
+        📦
       </div>
       <div>
-        <h3 id="progressTitle" class="text-base font-black text-slate-900">300 DPI 렌더링 & ZIP 생성 중...</h3>
-        <p id="progressSubtitle" class="text-xs text-slate-500 mt-1">잠시만 기다려주세요</p>
+        <h3 class="text-base font-black text-slate-800">덱 이미지 일괄 렌더링 중...</h3>
+        <p id="progressStatusText" class="text-xs text-slate-500 mt-1">카드를 고해상도 300 DPI로 출력하고 있습니다</p>
       </div>
-      <!-- Progress Bar -->
       <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
-        <div id="progressBarFill" class="bg-indigo-600 h-full w-0 transition-all duration-150"></div>
+        <div id="progressBarFill" class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full w-0 transition-all duration-150"></div>
       </div>
-      <span id="progressPercent" class="text-xs font-black text-indigo-600 block">0%</span>
+      <p id="progressPercentage" class="text-xs font-black text-blue-600">0%</p>
     </div>
   </div>
 
   <script>
-    // ==========================================
-    // 0. 기본 수학 및 캔버스 헬퍼 함수
-    // ==========================================
-    // 정밀 원형 호(arcTo)를 사용한 5mm 귀도리 동심 라운드 사각형 패스
+    // Constants
+    const FIXED_MOVE_NAME_OFFSET = 130;
+
+    // Canvas & Context Setup
+    const canvas = document.getElementById('cardCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // View Switching Elements
+    const viewFrontBtn = document.getElementById('viewFrontBtn');
+    const viewBackBtn = document.getElementById('viewBackBtn');
+    const flipCardBtn = document.getElementById('flipCardBtn');
+    const canvasSideIndicator = document.getElementById('canvasSideIndicator');
+    let currentCardSide = 'front';
+
+    // UI Input Elements
+    const cardCategoryAlbbamonBtn = document.getElementById('cardCategoryAlbbamon');
+    const cardCategoryTrainerBtn = document.getElementById('cardCategoryTrainer');
+    const cardCategoryEnergyBtn = document.getElementById('cardCategoryEnergyBtn');
+    const cardNameInput = document.getElementById('cardName');
+    const isTrainerAlbbamonInput = document.getElementById('isTrainerAlbbamon');
+    const trainerAlbbamonLabel = document.getElementById('trainerAlbbamonLabel');
+    const trainerNameWrapper = document.getElementById('trainerNameWrapper');
+    const trainerPrefixInput = document.getElementById('trainerPrefix');
+    const cardHpInput = document.getElementById('cardHp');
+    
+    // Type Elements
+    const albbamonTypeSelector = document.getElementById('albbamonTypeSelector');
+    const cardSubInput = document.getElementById('cardSub');
+    const isExCardInput = document.getElementById('isExCard');
+    const preEvoWrapper = document.getElementById('preEvoWrapper');
+    const preEvoNameInput = document.getElementById('preEvoName');
+    const borderColorInput = document.getElementById('borderColor');
+
+    // Background & Texture
+    const cardBaseBgColorInput = document.getElementById('cardBaseBgColor');
+    const bodyColorPresetBtns = document.querySelectorAll('.body-color-preset');
+    const textureUploadInput = document.getElementById('textureUpload');
+    const textureStatusLabel = document.getElementById('textureStatusLabel');
+    const textureOpacityInput = document.getElementById('textureOpacity');
+    const textureOpacityDisplay = document.getElementById('textureOpacityDisplay');
+    const textureBlendModeSelect = document.getElementById('textureBlendMode');
+    const resetTextureBtn = document.getElementById('resetTextureBtn');
+    const cardBaseBgUploadInput = document.getElementById('cardBaseBgUpload');
+    const resetCardBaseBgBtn = document.getElementById('resetCardBaseBgBtn');
+
+    // Images
+    const imageUploadInput = document.getElementById('imageUpload');
+    const resetImageBtn = document.getElementById('resetImageBtn');
+    const frameBgUploadInput = document.getElementById('frameBgUpload');
+    const resetFrameBgBtn = document.getElementById('resetFrameBgBtn');
+    const frameBgWrapper = document.getElementById('frameBgWrapper');
+    const backImageUploadInput = document.getElementById('backImageUpload');
+    const resetBackImageBtn = document.getElementById('resetBackImageBtn');
+
+    // Art Type
+    const artTypeStandardBtn = document.getElementById('artTypeStandard');
+    const artTypeFullBtn = document.getElementById('artTypeFull');
+    const artTypeGuide = document.getElementById('artTypeGuide');
+
+    // Moves
+    const albbamonMovesContainer = document.getElementById('albbamonMovesContainer');
+    const isMove1AbilityInput = document.getElementById('isMove1Ability');
+    const move1CostWrapper = document.getElementById('move1CostWrapper');
+    const move1NameWrapper = document.getElementById('move1NameWrapper');
+    const move1DmgWrapper = document.getElementById('move1DmgWrapper');
+    const move1NameLabel = document.getElementById('move1NameLabel');
+    const move1DescLabel = document.getElementById('move1DescLabel');
+    const move1CostInput = document.getElementById('move1Cost');
+    const move1NameInput = document.getElementById('move1Name');
+    const move1DmgInput = document.getElementById('move1Dmg');
+    const move1DescInput = document.getElementById('move1Desc');
+    const move2CostInput = document.getElementById('move2Cost');
+    const move2NameInput = document.getElementById('move2Name');
+    const move2DmgInput = document.getElementById('move2Dmg');
+    const move2DescInput = document.getElementById('move2Desc');
+
+    // Trainer / Meta
+    const trainerTextContainer = document.getElementById('trainerTextContainer');
+    const trainerDescInput = document.getElementById('trainerDesc');
+    const statusInputGrid = document.getElementById('statusInputGrid');
+    const trainerNotice = document.getElementById('trainerNotice');
+    const bottomMetaWrapper = document.getElementById('bottomMetaWrapper');
+    const illustrationSettingsSection = document.getElementById('illustrationSettingsSection');
+    const weaknessInput = document.getElementById('weakness');
+    const resistanceInput = document.getElementById('resistance');
+    const retreatInput = document.getElementById('retreat');
+    const flavorTextInput = document.getElementById('flavorText');
+    const illustratorInput = document.getElementById('illustrator');
+    const regulationMarkInput = document.getElementById('regulationMark');
+    const setCardPackInput = document.getElementById('setCardPack');
+    const collectionNumInput = document.getElementById('collectionNum');
+    const cardRarityInput = document.getElementById('cardRarity');
+
+    // Actions & Subcategories
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadBtnTop = document.getElementById('downloadBtnTop');
+    const downloadBleedBtn = document.getElementById('downloadBleedBtn');
+    const downloadBleedBtnTop = document.getElementById('downloadBleedBtnTop');
+    const colorPresetBtns = document.querySelectorAll('.color-preset-btn');
+    const albbamonStageButtons = document.getElementById('albbamonStageButtons');
+    const stageBtns = document.querySelectorAll('.stage-btn');
+    const trainerStageButtons = document.getElementById('trainerStageButtons');
+    const trainerTypeBtns = document.querySelectorAll('.trainer-type-btn');
+
+    // Deck Elements
+    const addCardToDeckBtn = document.getElementById('addCardToDeckBtn');
+    const deckSelect = document.getElementById('deckSelect');
+    const deckCountBadge = document.getElementById('deckCountBadge');
+    const newDeckBtn = document.getElementById('newDeckBtn');
+    const editDeckNameBtn = document.getElementById('editDeckNameBtn');
+    const setDeckCapacityBtn = document.getElementById('setDeckCapacityBtn');
+    const clearDeckBtn = document.getElementById('clearDeckBtn');
+    const deleteDeckBtn = document.getElementById('deleteDeckBtn');
+    const deckCardList = document.getElementById('deckCardList');
+    const saveDeckFileBtn = document.getElementById('saveDeckFileBtn');
+    const loadDeckFileTrigger = document.getElementById('loadDeckFileTrigger');
+    const loadDeckFileInput = document.getElementById('loadDeckFileInput');
+    const shareDeckBtn = document.getElementById('shareDeckBtn');
+    const batchDownloadZipBtn = document.getElementById('batchDownloadZipBtn');
+
+    // Modal Elements
+    const customModal = document.getElementById('customModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalCancelBtn = document.getElementById('modalCancelBtn');
+    const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+    let modalConfirmCallback = null;
+
+    // Progress Modal
+    const progressModal = document.getElementById('progressModal');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const progressStatusText = document.getElementById('progressStatusText');
+    const progressPercentage = document.getElementById('progressPercentage');
+
+    // State Variables
+    let currentCardBaseBg = null;
+    let currentTextureImg = null;
+    let currentImage = null;
+    let isDefaultImage = true;
+    let currentFrameBg = null;
+    let currentBackImage = null;
+    let isDefaultBackImage = true;
+    let cardArtType = 'standard';
+    let cardCategory = 'albbamon';
+    let currentCardType = 'madness';
+
+    // Deck System State
+    let decks = [
+      { id: 'deck_default', name: '기본 덱', maxCards: 60, cards: [] }
+    ];
+    let currentDeckId = 'deck_default';
+
+    const TYPE_DATA = {
+      madness: { name: '광기', icon: '🔥', bgColor: '#ef4444', glowColor: 'rgba(239, 68, 68, 0.45)' },
+      depression: { name: '우울', icon: '🌀', bgColor: '#3b82f6', glowColor: 'rgba(59, 130, 246, 0.45)' },
+      purity: { name: '순수', icon: '🍀', bgColor: '#10b981', glowColor: 'rgba(16, 185, 129, 0.45)' }
+    };
+
+    // Helper: Strict circular arc round rectangle (5mm concentric alignment)
     function roundRect(ctx, x, y, width, height, radius) {
       if (typeof radius === 'undefined') radius = 5;
       if (typeof radius === 'number') {
@@ -780,6 +840,7 @@
       ctx.closePath();
     }
 
+    // Helper: Draw image with cover fill
     function drawImageCover(ctx, img, dx, dy, dWidth, dHeight) {
       if (!img || !img.complete) return;
       const imgRatio = img.width / img.height;
@@ -800,23 +861,23 @@
       ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     }
 
-    function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
-      const words = (text || '').split('');
+    // Helper: Text wrap without ellipsis
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 4) {
+      const chars = (text || '').split('');
       let line = '';
       let currentY = y;
       let lineCount = 0;
 
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n];
+      for (let n = 0; n < chars.length; n++) {
+        const testLine = line + chars[n];
         const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
+        if (metrics.width > maxWidth && n > 0) {
           ctx.fillText(line, x, currentY);
-          line = words[n];
+          line = chars[n];
           currentY += lineHeight;
           lineCount++;
-          if (lineCount >= maxLines - 1) {
-            ctx.fillText(text.substring(n), x, currentY);
+          if (lineCount >= maxLines) {
+            ctx.fillText(line + chars.slice(n + 1).join(''), x, currentY);
             return;
           }
         } else {
@@ -826,6 +887,7 @@
       ctx.fillText(line, x, currentY);
     }
 
+    // Helper: Multiline text wrap
     function wrapMultilineText(ctx, fullText, x, y, maxWidth, lineHeight, maxLines = 10) {
       const paragraphs = (fullText || '').split('\n');
       let currentY = y;
@@ -861,95 +923,104 @@
       }
     }
 
-    // ==========================================
-    // 1. 공식 골드 아르데코 뒷면 네이티브 렌더러
-    // ==========================================
+    // Native Gold Art-Deco Back Renderer
     function drawOfficialBack(targetCtx, W, H) {
       targetCtx.save();
-      // 1. 딥 블랙 베이스
       targetCtx.fillStyle = '#0a0a0a';
       targetCtx.fillRect(0, 0, W, H);
 
-      // 골드 그라디언트
-      const goldGrad = targetCtx.createLinearGradient(0, 0, W, H);
-      goldGrad.addColorStop(0, '#f59e0b');
-      goldGrad.addColorStop(0.3, '#fef08a');
-      goldGrad.addColorStop(0.5, '#d97706');
-      goldGrad.addColorStop(0.8, '#fde047');
-      goldGrad.addColorStop(1, '#b45309');
-
-      targetCtx.strokeStyle = goldGrad;
-      targetCtx.fillStyle = goldGrad;
-
-      // 5mm 귀도리 외곽 2중 보더
-      targetCtx.lineWidth = 4;
-      roundRect(targetCtx, 26, 26, W - 52, H - 52, 44);
+      // Gold Borders
+      targetCtx.strokeStyle = '#dfb76c';
+      targetCtx.lineWidth = 3;
+      roundRect(targetCtx, 32, 32, W - 64, H - 64, 46);
       targetCtx.stroke();
 
+      targetCtx.strokeStyle = '#c59b43';
       targetCtx.lineWidth = 1.5;
-      roundRect(targetCtx, 36, 36, W - 72, H - 72, 34);
+      roundRect(targetCtx, 42, 42, W - 84, H - 84, 40);
       targetCtx.stroke();
 
-      // 상단 ALBBAMON 타이틀
+      // Top Title Banner
       targetCtx.textAlign = 'center';
       targetCtx.textBaseline = 'middle';
-      targetCtx.font = '900 48px "Noto Sans KR", sans-serif';
-      targetCtx.fillText('ALBBAMON', W / 2, 115);
+      targetCtx.fillStyle = '#e5c17b';
+      targetCtx.font = '900 38px "Noto Sans KR", sans-serif';
+      targetCtx.fillText('ALBBAMON', W / 2, 130);
 
-      // 중앙 엠블럼 육각형
+      // Center Hexagon & ABBN
       const cx = W / 2;
       const cy = H / 2;
-      const hexR = 170;
+      targetCtx.strokeStyle = '#dfb76c';
+      targetCtx.lineWidth = 2.5;
 
-      targetCtx.save();
       targetCtx.beginPath();
       for (let i = 0; i < 6; i++) {
         const angle = (Math.PI / 3) * i - Math.PI / 6;
-        const hx = cx + hexR * Math.cos(angle);
-        const hy = cy + hexR * Math.sin(angle);
+        const hx = cx + 180 * Math.cos(angle);
+        const hy = cy + 180 * Math.sin(angle);
         if (i === 0) targetCtx.moveTo(hx, hy);
         else targetCtx.lineTo(hx, hy);
       }
       targetCtx.closePath();
-      targetCtx.lineWidth = 4;
       targetCtx.stroke();
-      targetCtx.restore();
 
-      // 중앙 ABBN 텍스트
-      targetCtx.font = '900 42px "Noto Sans KR", sans-serif';
+      targetCtx.font = '900 46px "Noto Sans KR", sans-serif';
       targetCtx.fillText('ABBN', cx, cy - 80);
 
-      // 중앙 나비 이모지/심볼
-      targetCtx.font = '100px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
-      targetCtx.fillText('🦋', cx, cy + 10);
+      // Geometric Butterfly
+      targetCtx.fillStyle = '#dfb76c';
+      targetCtx.beginPath();
+      targetCtx.moveTo(cx, cy - 35);
+      targetCtx.lineTo(cx - 90, cy - 70);
+      targetCtx.lineTo(cx - 120, cy);
+      targetCtx.lineTo(cx - 40, cy + 50);
+      targetCtx.lineTo(cx, cy + 20);
+      targetCtx.lineTo(cx + 40, cy + 50);
+      targetCtx.lineTo(cx + 120, cy);
+      targetCtx.lineTo(cx + 90, cy - 70);
+      targetCtx.closePath();
+      targetCtx.fill();
 
-      // 주변 4마리의 기하학 고양이 심볼
-      targetCtx.font = '36px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
-      targetCtx.fillText('🐈', cx, cy - 130);
-      targetCtx.fillText('🐈', cx + 130, cy - 40);
-      targetCtx.fillText('🐈', cx - 130, cy + 40);
-      targetCtx.fillText('🐈', cx, cy + 135);
+      // 6 Geometric Orbit Cats (Silhouettes)
+      for (let i = 0; i < 6; i++) {
+        const rot = (Math.PI / 3) * i;
+        targetCtx.save();
+        targetCtx.translate(cx, cy);
+        targetCtx.rotate(rot);
+        targetCtx.translate(0, -260);
 
-      // 음표 및 미니 나비 장식
-      targetCtx.font = '22px "Noto Sans KR", sans-serif';
-      targetCtx.fillText('♪', cx - 150, cy - 110);
-      targetCtx.fillText('♫', cx + 155, cy - 100);
-      targetCtx.fillText('♬', cx - 155, cy + 115);
-      targetCtx.fillText('♪', cx + 150, cy + 120);
+        targetCtx.fillStyle = '#dfb76c';
+        targetCtx.beginPath();
+        targetCtx.ellipse(0, 0, 24, 12, 0, 0, Math.PI * 2);
+        targetCtx.fill();
+        targetCtx.beginPath();
+        targetCtx.arc(18, -4, 8, 0, Math.PI * 2);
+        targetCtx.fill();
+        // Ears
+        targetCtx.beginPath();
+        targetCtx.moveTo(18, -12);
+        targetCtx.lineTo(14, -20);
+        targetCtx.lineTo(22, -18);
+        targetCtx.fill();
+        targetCtx.restore();
+      }
 
-      // 하단 CARD GAME 명판
-      targetCtx.save();
-      roundRect(targetCtx, W / 2 - 160, H - 155, 320, 52, 10);
-      targetCtx.lineWidth = 3;
+      // Bottom CARD GAME Banner
+      targetCtx.fillStyle = '#171717';
+      roundRect(targetCtx, cx - 160, H - 170, 320, 52, 10);
+      targetCtx.fill();
+      targetCtx.strokeStyle = '#dfb76c';
+      targetCtx.lineWidth = 2;
       targetCtx.stroke();
-      targetCtx.font = '900 32px "Noto Sans KR", sans-serif';
-      targetCtx.fillText('CARD GAME', W / 2, H - 128);
-      targetCtx.restore();
+
+      targetCtx.fillStyle = '#e5c17b';
+      targetCtx.font = '900 28px "Noto Sans KR", sans-serif';
+      targetCtx.fillText('CARD GAME', cx, H - 144);
 
       targetCtx.restore();
     }
 
-    // 기본 앞면 일러스트 생성
+    // Default Front Artwork
     function createDefaultArtwork(includeBackground = true) {
       const artCanvas = document.createElement('canvas');
       artCanvas.width = 750;
@@ -976,7 +1047,7 @@
       const cx = 375;
       const cy = 410;
 
-      // 귀
+      // Ears
       actx.fillStyle = '#facc15';
       actx.beginPath();
       actx.moveTo(cx - 95, cy - 90);
@@ -987,6 +1058,15 @@
       actx.lineWidth = 6;
       actx.stroke();
 
+      actx.fillStyle = '#1e293b';
+      actx.beginPath();
+      actx.moveTo(cx - 160, cy - 230);
+      actx.lineTo(cx - 130, cy - 180);
+      actx.lineTo(cx - 85, cy - 205);
+      actx.closePath();
+      actx.fill();
+
+      actx.fillStyle = '#facc15';
       actx.beginPath();
       actx.moveTo(cx + 95, cy - 90);
       actx.lineTo(cx + 160, cy - 230);
@@ -994,32 +1074,47 @@
       actx.fill();
       actx.stroke();
 
-      // 얼굴
+      actx.fillStyle = '#1e293b';
+      actx.beginPath();
+      actx.moveTo(cx + 160, cy - 230);
+      actx.lineTo(cx + 130, cy - 180);
+      actx.lineTo(cx + 85, cy - 205);
+      actx.closePath();
+      actx.fill();
+
+      // Face
       actx.fillStyle = '#facc15';
       actx.beginPath();
       actx.ellipse(cx, cy, 140, 125, 0, 0, Math.PI * 2);
       actx.fill();
       actx.stroke();
 
-      // 볼
+      // Cheeks
       actx.fillStyle = '#ef4444';
       actx.beginPath();
       actx.arc(cx - 95, cy + 30, 26, 0, Math.PI * 2);
       actx.arc(cx + 95, cy + 30, 26, 0, Math.PI * 2);
       actx.fill();
 
-      // 눈
+      // Eyes
       actx.fillStyle = '#0f172a';
       actx.beginPath();
       actx.arc(cx - 50, cy - 18, 17, 0, Math.PI * 2);
       actx.arc(cx + 50, cy - 18, 17, 0, Math.PI * 2);
       actx.fill();
 
+      actx.fillStyle = '#ffffff';
       actx.beginPath();
-      actx.arc(cx + 50, cy - 18, 17, 0, Math.PI * 2);
+      actx.arc(cx - 55, cy - 23, 6, 0, Math.PI * 2);
+      actx.arc(cx + 45, cy - 23, 6, 0, Math.PI * 2);
       actx.fill();
 
-      // 입
+      // Mouth
+      actx.fillStyle = '#0f172a';
+      actx.beginPath();
+      actx.arc(cx, cy + 2, 5, 0, Math.PI * 2);
+      actx.fill();
+
       actx.strokeStyle = '#0f172a';
       actx.lineWidth = 5;
       actx.beginPath();
@@ -1034,161 +1129,7 @@
       return img;
     }
 
-    // ==========================================
-    // 2. DOM 요소 바인딩 및 전역 상태
-    // ==========================================
-    const canvas = document.getElementById('cardCanvas');
-    const ctx = canvas.getContext('2d');
-
-    const viewFrontBtn = document.getElementById('viewFrontBtn');
-    const viewBackBtn = document.getElementById('viewBackBtn');
-    const flipCardBtn = document.getElementById('flipCardBtn');
-    const canvasSideIndicator = document.getElementById('canvasSideIndicator');
-    let currentCardSide = 'front'; // 'front' | 'back'
-
-    const cardCategoryAlbbamonBtn = document.getElementById('cardCategoryAlbbamon');
-    const cardCategoryTrainerBtn = document.getElementById('cardCategoryTrainer');
-    const cardCategoryEnergyBtn = document.getElementById('cardCategoryEnergyBtn');
-    const cardNameInput = document.getElementById('cardName');
-    const isTrainerAlbbamonInput = document.getElementById('isTrainerAlbbamon');
-    const trainerAlbbamonLabel = document.getElementById('trainerAlbbamonLabel');
-    const trainerNameWrapper = document.getElementById('trainerNameWrapper');
-    const trainerPrefixInput = document.getElementById('trainerPrefix');
-    const cardHpInput = document.getElementById('cardHp');
-
-    const albbamonTypeSelector = document.getElementById('albbamonTypeSelector');
-    const cardSubInput = document.getElementById('cardSub');
-    const isExCardInput = document.getElementById('isExCard');
-    const preEvoWrapper = document.getElementById('preEvoWrapper');
-    const preEvoNameInput = document.getElementById('preEvoName');
-    const borderColorInput = document.getElementById('borderColor');
-
-    const cardBaseBgColorInput = document.getElementById('cardBaseBgColor');
-    const bodyColorPresetBtns = document.querySelectorAll('.body-color-preset');
-    const textureUploadInput = document.getElementById('textureUpload');
-    const textureStatusLabel = document.getElementById('textureStatusLabel');
-    const textureOpacityInput = document.getElementById('textureOpacity');
-    const textureOpacityDisplay = document.getElementById('textureOpacityDisplay');
-    const textureBlendModeSelect = document.getElementById('textureBlendMode');
-    const resetTextureBtn = document.getElementById('resetTextureBtn');
-
-    const cardBaseBgUploadInput = document.getElementById('cardBaseBgUpload');
-    const resetCardBaseBgBtn = document.getElementById('resetCardBaseBgBtn');
-
-    const imageUploadInput = document.getElementById('imageUpload');
-    const resetImageBtn = document.getElementById('resetImageBtn');
-
-    const frameBgUploadInput = document.getElementById('frameBgUpload');
-    const resetFrameBgBtn = document.getElementById('resetFrameBgBtn');
-    const frameBgWrapper = document.getElementById('frameBgWrapper');
-
-    const backImageUploadInput = document.getElementById('backImageUpload');
-    const resetBackImageBtn = document.getElementById('resetBackImageBtn');
-
-    const artTypeStandardBtn = document.getElementById('artTypeStandard');
-    const artTypeFullBtn = document.getElementById('artTypeFull');
-    const artTypeGuide = document.getElementById('artTypeGuide');
-
-    const albbamonMovesContainer = document.getElementById('albbamonMovesContainer');
-    const isMove1AbilityInput = document.getElementById('isMove1Ability');
-    const move1CostWrapper = document.getElementById('move1CostWrapper');
-    const move1NameWrapper = document.getElementById('move1NameWrapper');
-    const move1DmgWrapper = document.getElementById('move1DmgWrapper');
-    const move1NameLabel = document.getElementById('move1NameLabel');
-    const move1DescLabel = document.getElementById('move1DescLabel');
-
-    const move1CostInput = document.getElementById('move1Cost');
-    const move1NameInput = document.getElementById('move1Name');
-    const move1DmgInput = document.getElementById('move1Dmg');
-    const move1DescInput = document.getElementById('move1Desc');
-
-    const move2CostInput = document.getElementById('move2Cost');
-    const move2NameInput = document.getElementById('move2Name');
-    const move2DmgInput = document.getElementById('move2Dmg');
-    const move2DescInput = document.getElementById('move2Desc');
-
-    const trainerTextContainer = document.getElementById('trainerTextContainer');
-    const trainerDescInput = document.getElementById('trainerDesc');
-
-    const statusInputGrid = document.getElementById('statusInputGrid');
-    const trainerNotice = document.getElementById('trainerNotice');
-    const bottomMetaWrapper = document.getElementById('bottomMetaWrapper');
-    const illustrationSettingsSection = document.getElementById('illustrationSettingsSection');
-    const weaknessInput = document.getElementById('weakness');
-    const resistanceInput = document.getElementById('resistance');
-    const retreatInput = document.getElementById('retreat');
-    const flavorTextInput = document.getElementById('flavorText');
-    const illustratorInput = document.getElementById('illustrator');
-    const regulationMarkInput = document.getElementById('regulationMark');
-    const setCardPackInput = document.getElementById('setCardPack');
-    const collectionNumInput = document.getElementById('collectionNum');
-    const cardRarityInput = document.getElementById('cardRarity');
-
-    const downloadBtn = document.getElementById('downloadBtn');
-    const downloadBtnTop = document.getElementById('downloadBtnTop');
-    const downloadBleedBtn = document.getElementById('downloadBleedBtn');
-    const downloadBleedBtnTop = document.getElementById('downloadBleedBtnTop');
-    const colorPresetBtns = document.querySelectorAll('.color-preset-btn');
-
-    const albbamonStageButtons = document.getElementById('albbamonStageButtons');
-    const stageBtns = document.querySelectorAll('.stage-btn');
-    const trainerStageButtons = document.getElementById('trainerStageButtons');
-    const trainerTypeBtns = document.querySelectorAll('.trainer-type-btn');
-
-    // 덱 관련 UI 요소
-    const addCardToDeckBtn = document.getElementById('addCardToDeckBtn');
-    const deckSelect = document.getElementById('deckSelect');
-    const newDeckBtn = document.getElementById('newDeckBtn');
-    const renameDeckBtn = document.getElementById('renameDeckBtn');
-    const setDeckCapacityBtn = document.getElementById('setDeckCapacityBtn');
-    const clearDeckBtn = document.getElementById('clearDeckBtn');
-    const deleteDeckBtn = document.getElementById('deleteDeckBtn');
-    const deckCountBadge = document.getElementById('deckCountBadge');
-    const deckCardGrid = document.getElementById('deckCardGrid');
-    const exportDeckJsonBtn = document.getElementById('exportDeckJsonBtn');
-    const importDeckJsonInput = document.getElementById('importDeckJsonInput');
-    const shareDeckBtn = document.getElementById('shareDeckBtn');
-    const importDeckCodeBtn = document.getElementById('importDeckCodeBtn');
-    const batchDownloadZipBtn = document.getElementById('batchDownloadZipBtn');
-
-    // 모달 요소
-    const customModal = document.getElementById('customModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalSubtitle = document.getElementById('modalSubtitle');
-    const modalInput = document.getElementById('modalInput');
-    const modalTextarea = document.getElementById('modalTextarea');
-    const modalConfirmBtn = document.getElementById('modalConfirmBtn');
-    const modalCancelBtn = document.getElementById('modalCancelBtn');
-
-    const progressModal = document.getElementById('progressModal');
-    const progressTitle = document.getElementById('progressTitle');
-    const progressSubtitle = document.getElementById('progressSubtitle');
-    const progressBarFill = document.getElementById('progressBarFill');
-    const progressPercent = document.getElementById('progressPercent');
-
-    // 상태 변수
-    let currentCardBaseBg = null;
-    let currentTextureImg = null;
-    let currentImage = null;
-    let isDefaultImage = true;
-    let currentFrameBg = null;
-    let currentBackImage = null;
-    let isDefaultBackImage = true;
-    let cardArtType = 'standard'; // 'standard' | 'full'
-    let cardCategory = 'albbamon'; // 'albbamon' | 'trainer' | 'energy'
-    let currentCardType = 'madness'; // 'madness' | 'depression' | 'purity'
-
-    const FIXED_MOVE_NAME_OFFSET = 130;
-
-    const TYPE_DATA = {
-      madness: { name: '광기', icon: '🔥', bgColor: '#ef4444', glowColor: 'rgba(239, 68, 68, 0.45)' },
-      depression: { name: '우울', icon: '🌀', bgColor: '#3b82f6', glowColor: 'rgba(59, 130, 246, 0.45)' },
-      purity: { name: '순수', icon: '🍀', bgColor: '#10b981', glowColor: 'rgba(16, 185, 129, 0.45)' }
-    };
-
-    // ==========================================
-    // 3. 카드 메인 렌더링 함수 (drawCard)
-    // ==========================================
+    // Main Draw Card Function
     function drawCard() {
       const W = canvas.width;  // 750
       const H = canvas.height; // 1050
@@ -1199,24 +1140,24 @@
       const margin = 30;
       const innerW = W - margin * 2;
       const innerH = H - margin * 2;
+      const innerRadius = 29.5; // 59.5 - 30
 
       // 1. 테두리 전체 배경
       ctx.fillStyle = borderColor;
       ctx.fillRect(0, 0, W, H);
 
-      // 5mm 귀도리(R0=59.5px) 동심 액센트 라인 (d=16px -> R=43.5px)
+      // Inner Accent Ring (5mm 귀도리 59.5 - 16 = 43.5px)
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
       ctx.lineWidth = 2.5;
       roundRect(ctx, 16, 16, W - 32, H - 32, 43.5);
       ctx.stroke();
 
-      // 2. 내부 베이스 영역 (d=30px -> R=29.5px)
+      // 2. 내부 베이스 영역
       ctx.save();
-      roundRect(ctx, margin, margin, innerW, innerH, 29.5);
+      roundRect(ctx, margin, margin, innerW, innerH, innerRadius);
       ctx.clip();
 
       if (cardCategory === 'energy') {
-        // [기본 에너지 카드 배경]
         ctx.fillStyle = '#f8fafc';
         ctx.fillRect(margin, margin, innerW, innerH);
 
@@ -1236,7 +1177,6 @@
         ctx.fillRect(margin, margin, innerW, innerH);
 
       } else if (cardArtType === 'full') {
-        // [풀아트 전면]
         if (currentImage && currentImage.complete) {
           drawImageCover(ctx, currentImage, margin, margin, innerW, innerH);
         } else {
@@ -1259,7 +1199,6 @@
         ctx.fillRect(margin, H - margin - 440, innerW, 440);
 
       } else {
-        // [일반 중앙 프레임]
         const baseColor = (cardBaseBgColorInput && cardBaseBgColorInput.value) || '#ffffff';
         ctx.fillStyle = baseColor;
         ctx.fillRect(margin, margin, innerW, innerH);
@@ -1273,7 +1212,6 @@
           ctx.fillRect(margin, margin, innerW, innerH);
         }
 
-        // 텍스처 오버레이
         if (currentTextureImg && currentTextureImg.complete) {
           ctx.save();
           const opacity = (parseInt(textureOpacityInput.value, 10) || 50) / 100;
@@ -1284,12 +1222,10 @@
           ctx.restore();
         }
 
-        // 단독 배경
         if (currentCardBaseBg && currentCardBaseBg.complete) {
           drawImageCover(ctx, currentCardBaseBg, margin, margin, innerW, innerH);
         }
 
-        // 일러스트 프레임
         const imgX = margin + 24;
         const imgY = margin + 115;
         const imgW = innerW - 48;
@@ -1330,7 +1266,7 @@
       }
       ctx.restore();
 
-      // 3. Header Section (이름, 분류, HP, 속성)
+      // 3. Header Section (Category, Name, ex, HP, Type Symbol)
       const contentMarginLeft = margin + 38;
       const contentMarginRight = W - margin - 38;
 
@@ -1353,7 +1289,6 @@
         }
       }
 
-      // 카드 이름 및 ex
       ctx.fillStyle = '#0f172a';
       const baseCardName = (cardNameInput.value || (cardCategory === 'trainer' ? '박사의 연구' : (cardCategory === 'energy' ? '기본 에너지' : '김예지'))).trim();
 
@@ -1459,7 +1394,7 @@
         }
       });
 
-      // ex 마크
+      // ex Logo
       if (isExActive) {
         ctx.save();
         const exFontSize = isMultiLineName ? 38 : Math.max(34, Math.round(usedNameFontSize * 0.95));
@@ -1473,6 +1408,7 @@
         ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = Math.max(4, exFontSize * 0.16);
         ctx.lineJoin = 'round';
+        ctx.miterLimit = 2;
         ctx.strokeText('ex', exTextX, exTextY);
 
         const silverGrad = ctx.createLinearGradient(exTextX, exTextY - exFontSize * 0.85, exTextX, exTextY);
@@ -1480,12 +1416,13 @@
         silverGrad.addColorStop(0.25, '#f1f5f9');
         silverGrad.addColorStop(0.55, '#cbd5e1');
         silverGrad.addColorStop(1, '#64748b');
+
         ctx.fillStyle = silverGrad;
         ctx.fillText('ex', exTextX, exTextY);
         ctx.restore();
       }
 
-      // HP & 속성 심볼
+      // HP & Type
       if (cardCategory !== 'energy') {
         const topHeaderY = margin + 92;
         let rightCursorX = contentMarginRight;
@@ -1533,7 +1470,6 @@
         }
       }
 
-      // 4. 하단 콘텐츠 (기술 / 트레이너 설명 / 에너지 엠블럼)
       const attackStartY = margin + 115 + 430 + 55;
       const attackBoxMargin = margin + 28;
       const attackBoxWidth = W - attackBoxMargin * 2;
@@ -1585,7 +1521,6 @@
         wrapMultilineText(ctx, trainerDescInput.value || '', attackTextLeft, attackStartY + 14, attackDescWidth, 32, 5);
 
       } else {
-        // 알빠몬 카드 기술 렌더링
         if (cardArtType === 'full') {
           ctx.save();
           roundRect(ctx, attackBoxMargin, attackStartY - 24, attackBoxWidth, 215, 18);
@@ -1597,7 +1532,7 @@
           ctx.restore();
         }
 
-        // --- 기술 1 ---
+        // --- MOVE 1 ---
         const m1Y = attackStartY;
         const m1Cost = (move1CostInput.value || '').trim();
         const m1Name = move1NameInput.value || '';
@@ -1631,12 +1566,13 @@
             ctx.fillStyle = '#0f172a';
             ctx.font = '700 24px "Noto Sans KR", sans-serif';
             ctx.fillText(m1Cost, attackTextLeft, m1Y + 22);
+
             ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
             ctx.fillText(m1Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m1Y + 22);
           } else {
             ctx.fillStyle = '#0f172a';
             ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
-            ctx.fillText(m1Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m1Y + 22);
+            ctx.fillText(m1Name, attackTextLeft, m1Y + 22);
           }
 
           ctx.textAlign = 'right';
@@ -1656,7 +1592,7 @@
         ctx.lineTo(W - attackBoxMargin - 10, attackStartY + 95);
         ctx.stroke();
 
-        // --- 기술 2 ---
+        // --- MOVE 2 ---
         const m2Y = attackStartY + 118;
         const m2Cost = (move2CostInput.value || '').trim();
         const m2Name = move2NameInput.value || '';
@@ -1666,12 +1602,13 @@
           ctx.fillStyle = '#0f172a';
           ctx.font = '700 24px "Noto Sans KR", sans-serif';
           ctx.fillText(m2Cost, attackTextLeft, m2Y + 22);
+
           ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
           ctx.fillText(m2Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m2Y + 22);
         } else {
           ctx.fillStyle = '#0f172a';
           ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
-          ctx.fillText(m2Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m2Y + 22);
+          ctx.fillText(m2Name, attackTextLeft, m2Y + 22);
         }
 
         ctx.textAlign = 'right';
@@ -1684,7 +1621,7 @@
         wrapText(ctx, move2DescInput.value || '', attackTextLeft, m2Y + 54, attackDescWidth, 23, 2);
       }
 
-      // 5. 하단 상태 바 (약점 / 저항력 / 후퇴)
+      // 5. 하단 상태 바 (알빠몬 전용)
       if (cardCategory === 'albbamon') {
         const statusBoxY = H - margin - 112;
         const statusMargin = margin + 34;
@@ -1713,7 +1650,6 @@
         ctx.fillText('저항력', col2X, statusBoxY + 12);
         ctx.fillStyle = '#0f172a';
         ctx.font = '800 17px "Noto Sans KR", sans-serif';
-        // [저항력 공란 처리]: 비어있으면 아무것도 출력하지 않음
         ctx.fillText(resistanceInput.value ? resistanceInput.value.trim() : '', col2X, statusBoxY + 33);
 
         const col3X = statusMargin + colWidth * 2.5;
@@ -1740,7 +1676,9 @@
         ctx.textAlign = 'left';
         ctx.font = '700 15px "Noto Sans KR", sans-serif';
         const illuText = (illustratorInput.value || '').trim();
-        if (illuText) ctx.fillText(illuText, contentMarginLeft, H - margin - 36);
+        if (illuText) {
+          ctx.fillText(illuText, contentMarginLeft, H - margin - 36);
+        }
 
         let currentBottomX = contentMarginLeft;
         const bottomLineY = H - margin - 12;
@@ -1750,6 +1688,7 @@
           ctx.save();
           const boxSize = 18;
           const boxY = bottomLineY - 14;
+          
           ctx.fillStyle = cardArtType === 'full' ? 'rgba(255, 255, 255, 0.85)' : '#ffffff';
           ctx.strokeStyle = cardArtType === 'full' ? '#334155' : '#64748b';
           ctx.lineWidth = 1.4;
@@ -1762,6 +1701,7 @@
           ctx.textAlign = 'center';
           ctx.fillText(regText, currentBottomX + boxSize / 2, boxY + 14);
           ctx.restore();
+
           currentBottomX += boxSize + 8;
         }
 
@@ -1802,20 +1742,71 @@
           const flavorBoxY = H - margin - 58;
 
           roundRect(ctx, flavorBoxLeft, flavorBoxY, flavorBoxWidth, flavorBoxHeight, 8);
-          ctx.fillStyle = cardArtType === 'full' ? 'rgba(255, 255, 255, 0.72)' : '#f8fafc';
-          ctx.fill();
-          ctx.strokeStyle = cardArtType === 'full' ? 'rgba(255, 255, 255, 0.85)' : '#e2e8f0';
-          ctx.lineWidth = 1.2;
-          ctx.stroke();
+          if (cardArtType === 'full') {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+          } else {
+            ctx.fillStyle = '#f8fafc';
+            ctx.fill();
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+          }
 
           ctx.fillStyle = cardArtType === 'full' ? '#1e293b' : '#475569';
           ctx.textAlign = 'left';
-          wrapText(ctx, flavorText, flavorBoxLeft + 8, flavorBoxY + 18, flavorBoxWidth - 16, 16, 2);
+
+          const paddingX = 9;
+          const paddingY = 6;
+          const textMaxW = flavorBoxWidth - paddingX * 2;
+          const maxAvailH = flavorBoxHeight - paddingY * 2;
+          const words = flavorText.split('');
+
+          let optimalSize = 11.5;
+          let optimalLineH = 14.5;
+          let calculatedLines = [];
+
+          for (let fontSize = 11.5; fontSize >= 7.5; fontSize -= 0.5) {
+            const currentLineH = fontSize * 1.25;
+            ctx.font = `italic 500 ${fontSize}px "Noto Sans KR", sans-serif`;
+
+            const testLines = [];
+            let currentLine = '';
+
+            for (let n = 0; n < words.length; n++) {
+              const testLine = currentLine + words[n];
+              if (ctx.measureText(testLine).width > textMaxW && n > 0) {
+                testLines.push(currentLine);
+                currentLine = words[n];
+              } else {
+                currentLine = testLine;
+              }
+            }
+            if (currentLine) testLines.push(currentLine);
+
+            const totalHeight = testLines.length * currentLineH;
+            if (totalHeight <= maxAvailH || fontSize === 7.5) {
+              optimalSize = fontSize;
+              optimalLineH = currentLineH;
+              calculatedLines = testLines;
+              break;
+            }
+          }
+
+          ctx.font = `italic 500 ${optimalSize}px "Noto Sans KR", sans-serif`;
+          const actualTotalH = calculatedLines.length * optimalLineH;
+          const startTextY = flavorBoxY + paddingY + (maxAvailH - actualTotalH) / 2 + optimalSize * 0.9;
+
+          calculatedLines.forEach((lineText, idx) => {
+            ctx.fillText(lineText, flavorBoxLeft + paddingX, startTextY + idx * optimalLineH);
+          });
           ctx.restore();
         }
       }
 
-      // 저작권 표기
       ctx.save();
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
@@ -1824,6 +1815,7 @@
       ctx.restore();
     }
 
+    // Card Back Render
     function drawCardBack() {
       const W = canvas.width;
       const H = canvas.height;
@@ -1836,666 +1828,484 @@
       }
     }
 
-    // ==========================================
-    // 4. 모달 관리자 (Custom Modal UI)
-    // ==========================================
-    let modalResolve = null;
-
-    function openModal({ title, subtitle, inputType = 'none', initialValue = '', confirmText = '확인', cancelText = '취소' }) {
-      return new Promise((resolve) => {
-        modalResolve = resolve;
-        modalTitle.textContent = title;
-        modalSubtitle.textContent = subtitle;
-        modalConfirmBtn.textContent = confirmText;
-        modalCancelBtn.textContent = cancelText;
-
-        modalInput.classList.add('hidden');
-        modalTextarea.classList.add('hidden');
-
-        if (inputType === 'text') {
-          modalInput.classList.remove('hidden');
-          modalInput.value = initialValue;
-          setTimeout(() => modalInput.focus(), 50);
-        } else if (inputType === 'textarea') {
-          modalTextarea.classList.remove('hidden');
-          modalTextarea.value = initialValue;
-          setTimeout(() => modalTextarea.focus(), 50);
-        }
-
-        customModal.classList.remove('hidden');
-      });
+    // View Switching
+    function setCardSide(side) {
+      currentCardSide = side;
+      if (side === 'front') {
+        viewFrontBtn.className = 'px-2.5 py-1 text-xs font-bold rounded-md bg-white text-blue-600 shadow-sm transition';
+        viewBackBtn.className = 'px-2.5 py-1 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition';
+        canvasSideIndicator.textContent = '● 현재 보기: 앞면';
+        drawCard();
+      } else {
+        viewBackBtn.className = 'px-2.5 py-1 text-xs font-bold rounded-md bg-white text-blue-600 shadow-sm transition';
+        viewFrontBtn.className = 'px-2.5 py-1 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition';
+        canvasSideIndicator.textContent = '● 현재 보기: 뒷면';
+        drawCardBack();
+      }
     }
 
-    modalConfirmBtn.addEventListener('click', () => {
-      customModal.classList.add('hidden');
-      if (modalResolve) {
-        if (!modalInput.classList.contains('hidden')) {
-          modalResolve(modalInput.value);
-        } else if (!modalTextarea.classList.contains('hidden')) {
-          modalResolve(modalTextarea.value);
+    viewFrontBtn.addEventListener('click', () => setCardSide('front'));
+    viewBackBtn.addEventListener('click', () => setCardSide('back'));
+    flipCardBtn.addEventListener('click', () => {
+      setCardSide(currentCardSide === 'front' ? 'back' : 'front');
+    });
+
+    // Art Type switch
+    function setArtType(type) {
+      cardArtType = type;
+      if (type === 'standard') {
+        artTypeStandardBtn.className = 'art-type-btn flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-sm bg-white text-slate-900 border border-slate-200';
+        artTypeFullBtn.className = 'art-type-btn flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900';
+        artTypeGuide.textContent = '※ 일반: 중앙 지정 규격에 맞춰 크기가 조정됩니다. 배경 업로드 시 캐릭터 뒤에 합성되며, 투명 PNG 일러스트를 올리면 더욱 자연스럽습니다.';
+        if (frameBgWrapper) frameBgWrapper.classList.remove('hidden');
+      } else {
+        artTypeFullBtn.className = 'art-type-btn flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-sm bg-amber-500 text-white font-extrabold shadow-amber-200';
+        artTypeStandardBtn.className = 'art-type-btn flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900';
+        artTypeGuide.textContent = '※ 특별: 카드의 전면 전체 배경에 일러스트가 가득 채워지는 풀아트(Full-Art) 스타일입니다.';
+        if (frameBgWrapper) frameBgWrapper.classList.add('hidden');
+      }
+      drawCard();
+    }
+
+    artTypeStandardBtn.addEventListener('click', () => setArtType('standard'));
+    artTypeFullBtn.addEventListener('click', () => setArtType('full'));
+
+    function updateStageButtonStyles(selectedStage) {
+      stageBtns.forEach(btn => {
+        if (btn.getAttribute('data-stage') === selectedStage) {
+          btn.className = 'stage-btn py-2 px-3 rounded-lg text-xs font-extrabold transition-all border border-blue-500 bg-blue-50 text-blue-700 shadow-sm flex items-center justify-center gap-1.5';
+          const icon = btn.querySelector('span');
+          if (icon) icon.className = 'text-blue-500';
         } else {
-          modalResolve(true);
+          btn.className = 'stage-btn py-2 px-3 rounded-lg text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 flex items-center justify-center gap-1.5';
+          const icon = btn.querySelector('span');
+          if (icon) icon.className = 'text-slate-400';
         }
-      }
-    });
-
-    modalCancelBtn.addEventListener('click', () => {
-      customModal.classList.add('hidden');
-      if (modalResolve) modalResolve(null);
-    });
-
-    // ==========================================
-    // 5. 덱 빌더 시스템 (Deck Builder)
-    // ==========================================
-    let decks = [
-      { id: 'deck_1', name: '내 메인 덱', maxCards: 60, cards: [] }
-    ];
-    let currentDeckId = 'deck_1';
-
-    function getCurrentDeck() {
-      return decks.find(d => d.id === currentDeckId) || decks[0];
-    }
-
-    function saveDecksToStorage() {
-      try {
-        localStorage.setItem('albbamon_decks', JSON.stringify({ decks, currentDeckId }));
-      } catch (e) {
-        console.warn('LocalStorage 저장 실패:', e);
+      });
+      if (cardCategory === 'albbamon' && (selectedStage.includes('1진화') || selectedStage.includes('2진화'))) {
+        preEvoWrapper.classList.remove('hidden');
+      } else {
+        preEvoWrapper.classList.add('hidden');
       }
     }
 
-    function loadDecksFromStorage() {
-      try {
-        const saved = localStorage.getItem('albbamon_decks');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed.decks) && parsed.decks.length > 0) {
-            decks = parsed.decks;
-            currentDeckId = parsed.currentDeckId || decks[0].id;
+    function updateTrainerButtonStyles(selectedType) {
+      trainerTypeBtns.forEach(btn => {
+        if (btn.getAttribute('data-trainer-type') === selectedType) {
+          btn.className = 'trainer-type-btn py-2 px-2.5 rounded-lg text-xs font-extrabold transition-all border border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm flex items-center justify-center gap-1';
+        } else {
+          btn.className = 'trainer-type-btn py-2 px-2.5 rounded-lg text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 flex items-center justify-center gap-1';
+        }
+      });
+    }
+
+    function setCardCategory(cat) {
+      cardCategory = cat;
+      const baseBtnClass = 'card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-white/60';
+
+      cardCategoryAlbbamonBtn.className = baseBtnClass;
+      cardCategoryTrainerBtn.className = baseBtnClass;
+      if (cardCategoryEnergyBtn) cardCategoryEnergyBtn.className = baseBtnClass;
+
+      if (cat === 'albbamon') {
+        cardCategoryAlbbamonBtn.className = 'card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all shadow-sm bg-white text-blue-600 border border-slate-200/80 hover:shadow';
+        
+        if (trainerAlbbamonLabel) trainerAlbbamonLabel.classList.remove('hidden');
+        if (cardHpInput && cardHpInput.parentElement) cardHpInput.parentElement.classList.remove('hidden');
+        if (albbamonTypeSelector) albbamonTypeSelector.classList.remove('hidden');
+        if (albbamonStageButtons) albbamonStageButtons.classList.remove('hidden');
+        if (trainerStageButtons) trainerStageButtons.classList.add('hidden');
+
+        if (illustrationSettingsSection) illustrationSettingsSection.classList.remove('hidden');
+        if (albbamonMovesContainer) albbamonMovesContainer.classList.remove('hidden');
+        if (trainerTextContainer) trainerTextContainer.classList.add('hidden');
+
+        if (statusInputGrid) statusInputGrid.classList.remove('hidden');
+        if (bottomMetaWrapper) bottomMetaWrapper.classList.remove('hidden');
+        if (trainerNotice) trainerNotice.classList.add('hidden');
+
+        if (['서포트', '아이템', '알빠몬의 도구', '스타디움', '기본 에너지'].includes(cardSubInput.value.trim())) {
+          cardSubInput.value = '기본 알빠몬';
+          updateStageButtonStyles('기본 알빠몬');
+        } else {
+          updateStageButtonStyles(cardSubInput.value.trim());
+        }
+      } else if (cat === 'trainer') {
+        cardCategoryTrainerBtn.className = 'card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all shadow-sm bg-emerald-600 text-white shadow-emerald-200';
+        
+        if (trainerAlbbamonLabel) trainerAlbbamonLabel.classList.add('hidden');
+        if (trainerNameWrapper) trainerNameWrapper.classList.add('hidden');
+        if (cardHpInput && cardHpInput.parentElement) cardHpInput.parentElement.classList.remove('hidden');
+        if (albbamonTypeSelector) albbamonTypeSelector.classList.add('hidden');
+        if (albbamonStageButtons) albbamonStageButtons.classList.add('hidden');
+        if (trainerStageButtons) trainerStageButtons.classList.remove('hidden');
+
+        if (illustrationSettingsSection) illustrationSettingsSection.classList.remove('hidden');
+        if (albbamonMovesContainer) albbamonMovesContainer.classList.add('hidden');
+        if (trainerTextContainer) trainerTextContainer.classList.remove('hidden');
+
+        if (statusInputGrid) statusInputGrid.classList.add('hidden');
+        if (bottomMetaWrapper) bottomMetaWrapper.classList.remove('hidden');
+        if (trainerNotice) {
+          trainerNotice.classList.remove('hidden');
+          trainerNotice.textContent = '※ 트레이너스 카드 선택 시 약점 / 저항력 / 후퇴 영역은 카드에 표시되지 않습니다.';
+        }
+
+        if (['기본 알빠몬', '1진화', '2진화', '기본 에너지'].includes(cardSubInput.value.trim())) {
+          cardSubInput.value = '서포트';
+          updateTrainerButtonStyles('서포트');
+        } else {
+          updateTrainerButtonStyles(cardSubInput.value.trim());
+        }
+        if (preEvoWrapper) preEvoWrapper.classList.add('hidden');
+      } else if (cat === 'energy') {
+        cardCategoryEnergyBtn.className = 'card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all shadow-sm bg-amber-500 text-white shadow-amber-200';
+
+        if (trainerAlbbamonLabel) trainerAlbbamonLabel.classList.add('hidden');
+        if (trainerNameWrapper) trainerNameWrapper.classList.add('hidden');
+        if (cardHpInput && cardHpInput.parentElement) cardHpInput.parentElement.classList.add('hidden');
+        if (albbamonTypeSelector) albbamonTypeSelector.classList.remove('hidden');
+        if (albbamonStageButtons) albbamonStageButtons.classList.add('hidden');
+        if (trainerStageButtons) trainerStageButtons.classList.add('hidden');
+
+        if (illustrationSettingsSection) illustrationSettingsSection.classList.add('hidden');
+        if (albbamonMovesContainer) albbamonMovesContainer.classList.add('hidden');
+        if (trainerTextContainer) trainerTextContainer.classList.add('hidden');
+
+        if (statusInputGrid) statusInputGrid.classList.add('hidden');
+        if (bottomMetaWrapper) bottomMetaWrapper.classList.add('hidden');
+        if (trainerNotice) {
+          trainerNotice.classList.remove('hidden');
+          trainerNotice.textContent = '※ 기본 에너지 카드는 중앙에 전용 에너지 심볼 엠블럼만 표시됩니다.';
+        }
+
+        cardSubInput.value = '기본 에너지';
+        if (cardNameInput.value === '김예지' || cardNameInput.value === '박사의 연구') {
+          cardNameInput.value = '기본 에너지';
+        }
+        if (preEvoWrapper) preEvoWrapper.classList.add('hidden');
+      }
+      drawCard();
+    }
+
+    function updateTypeButtonStyles(selectedType) {
+      const typeBtns = document.querySelectorAll('.type-btn');
+      typeBtns.forEach(btn => {
+        const typeKey = btn.getAttribute('data-type');
+        if (typeKey === selectedType) {
+          if (typeKey === 'madness') {
+            btn.className = 'type-btn py-2 px-3 rounded-lg text-xs font-black transition-all border border-red-500 bg-red-50 text-red-600 shadow-sm flex items-center justify-center gap-1.5';
+          } else if (typeKey === 'depression') {
+            btn.className = 'type-btn py-2 px-3 rounded-lg text-xs font-black transition-all border border-blue-500 bg-blue-50 text-blue-600 shadow-sm flex items-center justify-center gap-1.5';
+          } else if (typeKey === 'purity') {
+            btn.className = 'type-btn py-2 px-3 rounded-lg text-xs font-black transition-all border border-emerald-500 bg-emerald-50 text-emerald-600 shadow-sm flex items-center justify-center gap-1.5';
           }
+        } else {
+          btn.className = 'type-btn py-2 px-3 rounded-lg text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 flex items-center justify-center gap-1.5';
         }
-      } catch (e) {
-        console.warn('LocalStorage 로드 실패:', e);
-      }
-    }
-
-    function renderDeckSelector() {
-      deckSelect.innerHTML = '';
-      decks.forEach(deck => {
-        const opt = document.createElement('option');
-        opt.value = deck.id;
-        opt.textContent = deck.name;
-        if (deck.id === currentDeckId) opt.selected = true;
-        deckSelect.appendChild(opt);
       });
     }
 
-    function updateDeckCountBadge() {
-      const deck = getCurrentDeck();
-      const currentCount = deck.cards.reduce((sum, c) => sum + (c.count || 1), 0);
-      const maxCount = deck.maxCards || 60;
-      deckCountBadge.textContent = `${currentCount} / ${maxCount}장`;
-
-      if (currentCount === maxCount) {
-        deckCountBadge.className = 'px-2.5 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 font-extrabold text-xs rounded-full';
-      } else if (currentCount > maxCount) {
-        deckCountBadge.className = 'px-2.5 py-0.5 bg-rose-50 border border-rose-200 text-rose-700 font-extrabold text-xs rounded-full animate-pulse';
-      } else {
-        deckCountBadge.className = 'px-2.5 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 font-extrabold text-xs rounded-full';
-      }
-    }
-
-    function renderDeckCards() {
-      const deck = getCurrentDeck();
-      deckCardGrid.innerHTML = '';
-
-      if (deck.cards.length === 0) {
-        deckCardGrid.innerHTML = `
-          <div class="col-span-full py-12 flex flex-col items-center justify-center text-slate-400 space-y-2">
-            <span class="text-3xl">🃏</span>
-            <p class="text-xs sm:text-sm font-bold">덱에 담긴 카드가 없습니다.</p>
-            <p class="text-[11px] text-slate-400">상단 폼에서 카드를 만든 후 [현재 카드를 덱에 추가] 버튼을 눌러보세요.</p>
-          </div>
-        `;
-        updateDeckCountBadge();
-        return;
-      }
-
-      deck.cards.forEach((item, index) => {
-        const cardBox = document.createElement('div');
-        cardBox.className = 'group relative bg-slate-50 border border-slate-200 hover:border-indigo-400 rounded-2xl p-2.5 flex flex-col items-center transition shadow-sm hover:shadow-md';
-
-        const thumb = document.createElement('img');
-        thumb.src = item.thumbnail;
-        thumb.className = 'w-full h-auto aspect-[5/7] object-cover rounded-xl shadow-inner mb-2 cursor-pointer';
-        thumb.title = '클릭하면 이 카드의 정보를 편집창으로 불러옵니다.';
-        thumb.addEventListener('click', () => loadCardToEditor(item));
-
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'text-xs font-black text-slate-800 truncate w-full text-center leading-tight';
-        nameSpan.textContent = item.name;
-
-        const subSpan = document.createElement('span');
-        subSpan.className = 'text-[10px] text-slate-400 truncate w-full text-center mb-1.5';
-        subSpan.textContent = item.sub;
-
-        const ctrlBox = document.createElement('div');
-        ctrlBox.className = 'flex items-center justify-between w-full bg-white p-1 rounded-xl border border-slate-200 shadow-sm';
-
-        const minusBtn = document.createElement('button');
-        minusBtn.type = 'button';
-        minusBtn.className = 'w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs flex items-center justify-center active:scale-95';
-        minusBtn.textContent = '-';
-        minusBtn.addEventListener('click', () => changeCardQuantity(index, -1));
-
-        const countSpan = document.createElement('span');
-        countSpan.className = 'text-xs font-black text-indigo-700';
-        countSpan.textContent = `×${item.count}`;
-
-        const plusBtn = document.createElement('button');
-        plusBtn.type = 'button';
-        plusBtn.className = 'w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs flex items-center justify-center active:scale-95';
-        plusBtn.textContent = '+';
-        plusBtn.addEventListener('click', () => changeCardQuantity(index, 1));
-
-        ctrlBox.appendChild(minusBtn);
-        ctrlBox.appendChild(countSpan);
-        ctrlBox.appendChild(plusBtn);
-
-        cardBox.appendChild(thumb);
-        cardBox.appendChild(nameSpan);
-        cardBox.appendChild(subSpan);
-        cardBox.appendChild(ctrlBox);
-
-        deckCardGrid.appendChild(cardBox);
-      });
-
-      updateDeckCountBadge();
-    }
-
-    function changeCardQuantity(index, delta) {
-      const deck = getCurrentDeck();
-      if (!deck.cards[index]) return;
-
-      deck.cards[index].count += delta;
-      if (deck.cards[index].count <= 0) {
-        deck.cards.splice(index, 1);
-      }
-      saveDecksToStorage();
-      renderDeckCards();
-    }
-
-    function captureCurrentCardData() {
-      return {
-        id: 'card_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-        name: cardNameInput.value.trim() || '알빠몬 카드',
-        sub: cardSubInput.value.trim() || '기본 알빠몬',
-        category: cardCategory,
-        cardType: currentCardType,
-        artType: cardArtType,
-        hp: cardHpInput.value.trim(),
-        isEx: isExCardInput.checked,
-        isTrainerAlbbamon: isTrainerAlbbamonInput.checked,
-        trainerPrefix: trainerPrefixInput.value.trim(),
-        preEvoName: preEvoNameInput.value.trim(),
-        borderColor: borderColorInput.value,
-        baseColor: cardBaseBgColorInput.value,
-        isAbility: isMove1AbilityInput.checked,
-        m1Cost: move1CostInput.value,
-        m1Name: move1NameInput.value,
-        m1Dmg: move1DmgInput.value,
-        m1Desc: move1DescInput.value,
-        m2Cost: move2CostInput.value,
-        m2Name: move2NameInput.value,
-        m2Dmg: move2DmgInput.value,
-        m2Desc: move2DescInput.value,
-        trainerDesc: trainerDescInput.value,
-        weakness: weaknessInput.value,
-        resistance: resistanceInput.value,
-        retreat: retreatInput.value,
-        flavorText: flavorTextInput.value,
-        illustrator: illustratorInput.value,
-        regulation: regulationMarkInput.value,
-        pack: setCardPackInput.value,
-        collection: collectionNumInput.value,
-        rarity: cardRarityInput.value,
-        thumbnail: canvas.toDataURL('image/jpeg', 0.85),
-        count: 1
-      };
-    }
-
-    function addCurrentCardToDeck() {
-      const deck = getCurrentDeck();
-      const newCard = captureCurrentCardData();
-
-      const existingIndex = deck.cards.findIndex(c => 
-        c.name === newCard.name && 
-        c.sub === newCard.sub && 
-        c.hp === newCard.hp && 
-        c.category === newCard.category
-      );
-
-      if (existingIndex >= 0) {
-        deck.cards[existingIndex].count += 1;
-      } else {
-        deck.cards.push(newCard);
-      }
-
-      saveDecksToStorage();
-      renderDeckCards();
-
-      addCardToDeckBtn.classList.add('scale-95', 'bg-emerald-600');
-      setTimeout(() => {
-        addCardToDeckBtn.classList.remove('scale-95', 'bg-emerald-600');
-      }, 200);
-    }
-
-    function loadCardToEditor(cardData) {
-      setCardCategory(cardData.category || 'albbamon');
-      setArtType(cardData.artType || 'standard');
-
-      cardNameInput.value = cardData.name || '';
-      cardSubInput.value = cardData.sub || '';
-      cardHpInput.value = cardData.hp || '';
-      isExCardInput.checked = !!cardData.isEx;
-
-      isTrainerAlbbamonInput.checked = !!cardData.isTrainerAlbbamon;
-      if (trainerNameWrapper) {
-        if (cardData.isTrainerAlbbamon) trainerNameWrapper.classList.remove('hidden');
-        else trainerNameWrapper.classList.add('hidden');
-      }
-      trainerPrefixInput.value = cardData.trainerPrefix || '';
-      preEvoNameInput.value = cardData.preEvoName || '';
-      borderColorInput.value = cardData.borderColor || '#f59e0b';
-      cardBaseBgColorInput.value = cardData.baseColor || '#ffffff';
-
-      currentCardType = cardData.cardType || 'madness';
-      updateTypeButtonStyles(currentCardType);
-
-      if (cardData.category === 'albbamon') {
-        updateStageButtonStyles(cardData.sub);
-      } else if (cardData.category === 'trainer') {
-        updateTrainerButtonStyles(cardData.sub);
-      }
-
-      isMove1AbilityInput.checked = !!cardData.isAbility;
-      isMove1AbilityInput.dispatchEvent(new Event('change'));
-
-      move1CostInput.value = cardData.m1Cost || '';
-      move1NameInput.value = cardData.m1Name || '';
-      move1DmgInput.value = cardData.m1Dmg || '';
-      move1DescInput.value = cardData.m1Desc || '';
-
-      move2CostInput.value = cardData.m2Cost || '';
-      move2NameInput.value = cardData.m2Name || '';
-      move2DmgInput.value = cardData.m2Dmg || '';
-      move2DescInput.value = cardData.m2Desc || '';
-
-      trainerDescInput.value = cardData.trainerDesc || '';
-      weaknessInput.value = cardData.weakness || '';
-      resistanceInput.value = cardData.resistance || '';
-      retreatInput.value = cardData.retreat || '';
-      flavorTextInput.value = cardData.flavorText || '';
-      illustratorInput.value = cardData.illustrator || '';
-      regulationMarkInput.value = cardData.regulation || '';
-      setCardPackInput.value = cardData.pack || '';
-      collectionNumInput.value = cardData.collection || '';
-      cardRarityInput.value = cardData.rarity || '';
-
-      setCardSide('front');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // ==========================================
-    // 6. 덱 조작 버튼 리스너 (모달 적용)
-    // ==========================================
-    deckSelect.addEventListener('change', () => {
-      currentDeckId = deckSelect.value;
-      saveDecksToStorage();
-      renderDeckCards();
-    });
-
-    newDeckBtn.addEventListener('click', async () => {
-      const name = await openModal({
-        title: '새 덱 생성',
-        subtitle: '생성할 덱의 이름을 입력하세요.',
-        inputType: 'text',
-        initialValue: `새 덱 ${decks.length + 1}`
-      });
-      if (name && name.trim()) {
-        const newDeck = {
-          id: 'deck_' + Date.now(),
-          name: name.trim(),
-          maxCards: 60,
-          cards: []
-        };
-        decks.push(newDeck);
-        currentDeckId = newDeck.id;
-        saveDecksToStorage();
-        renderDeckSelector();
-        renderDeckCards();
-      }
-    });
-
-    setDeckCapacityBtn.addEventListener('click', async () => {
-      const deck = getCurrentDeck();
-      const capStr = await openModal({
-        title: '덱 목표 장수 설정',
-        subtitle: '이 덱의 최대/목표 장수를 숫자로 입력하세요 (예: 20, 30, 40, 60)',
-        inputType: 'text',
-        initialValue: String(deck.maxCards || 60)
-      });
-      if (capStr) {
-        const num = parseInt(capStr.trim(), 10);
-        if (!isNaN(num) && num > 0) {
-          deck.maxCards = num;
-          saveDecksToStorage();
-          updateDeckCountBadge();
-        }
-      }
-    });
-
-    renameDeckBtn.addEventListener('click', async () => {
-      const deck = getCurrentDeck();
-      const newName = await openModal({
-        title: '덱 이름 변경',
-        subtitle: '새로운 덱 이름을 입력하세요.',
-        inputType: 'text',
-        initialValue: deck.name
-      });
-      if (newName && newName.trim()) {
-        deck.name = newName.trim();
-        saveDecksToStorage();
-        renderDeckSelector();
-      }
-    });
-
-    clearDeckBtn.addEventListener('click', async () => {
-      const confirmed = await openModal({
-        title: '덱 비우기',
-        subtitle: '정말로 현재 덱의 모든 카드를 삭제하시겠습니까?',
-        confirmText: '비우기',
-        cancelText: '취소'
-      });
-      if (confirmed) {
-        const deck = getCurrentDeck();
-        deck.cards = [];
-        saveDecksToStorage();
-        renderDeckCards();
-      }
-    });
-
-    deleteDeckBtn.addEventListener('click', async () => {
-      if (decks.length <= 1) {
-        await openModal({
-          title: '삭제 불가',
-          subtitle: '최소 1개의 덱은 유지되어야 합니다.',
-          confirmText: '확인',
-          cancelText: ''
+    function initTypeButtons() {
+      const typeBtns = document.querySelectorAll('.type-btn');
+      typeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          currentCardType = this.getAttribute('data-type');
+          updateTypeButtonStyles(currentCardType);
+          if (currentCardSide === 'front') drawCard();
         });
-        return;
-      }
-      const confirmed = await openModal({
-        title: '덱 삭제',
-        subtitle: `[${getCurrentDeck().name}] 덱을 완전히 삭제하시겠습니까?`,
-        confirmText: '삭제',
-        cancelText: '취소'
       });
-      if (confirmed) {
-        decks = decks.filter(d => d.id !== currentDeckId);
-        currentDeckId = decks[0].id;
-        saveDecksToStorage();
-        renderDeckSelector();
-        renderDeckCards();
+    }
+    initTypeButtons();
+
+    isTrainerAlbbamonInput.addEventListener('change', function() {
+      if (this.checked) {
+        trainerNameWrapper.classList.remove('hidden');
+      } else {
+        trainerNameWrapper.classList.add('hidden');
+      }
+      drawCard();
+    });
+
+    trainerPrefixInput.addEventListener('input', drawCard);
+
+    stageBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const stage = this.getAttribute('data-stage');
+        cardSubInput.value = stage;
+        updateStageButtonStyles(stage);
+        drawCard();
+      });
+    });
+
+    preEvoNameInput.addEventListener('input', drawCard);
+
+    trainerTypeBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const type = this.getAttribute('data-trainer-type');
+        cardSubInput.value = type;
+        updateTrainerButtonStyles(type);
+        drawCard();
+      });
+    });
+
+    cardSubInput.addEventListener('input', function() {
+      const val = this.value.trim();
+      if (cardCategory === 'albbamon') {
+        updateStageButtonStyles(val);
+      } else {
+        updateTrainerButtonStyles(val);
       }
     });
 
-    addCardToDeckBtn.addEventListener('click', addCurrentCardToDeck);
+    cardCategoryAlbbamonBtn.addEventListener('click', () => setCardCategory('albbamon'));
+    cardCategoryTrainerBtn.addEventListener('click', () => setCardCategory('trainer'));
+    if (cardCategoryEnergyBtn) cardCategoryEnergyBtn.addEventListener('click', () => setCardCategory('energy'));
 
-    // ==========================================
-    // 7. 덱 공유 및 가져오기 (Export/Import)
-    // ==========================================
-    exportDeckJsonBtn.addEventListener('click', () => {
-      const deck = getCurrentDeck();
-      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(deck, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', `${deck.name.replace(/[/\\?%*:|"<>]/g, '_')}_albbamon_deck.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    });
+    if (cardBaseBgColorInput) {
+      cardBaseBgColorInput.addEventListener('input', () => {
+        if (currentCardSide === 'front') drawCard();
+      });
+    }
 
-    importDeckJsonInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const importedDeck = JSON.parse(event.target.result);
-          if (importedDeck && importedDeck.name && Array.isArray(importedDeck.cards)) {
-            importedDeck.id = 'deck_' + Date.now();
-            importedDeck.name = importedDeck.name + ' (가져옴)';
-            decks.push(importedDeck);
-            currentDeckId = importedDeck.id;
-            saveDecksToStorage();
-            renderDeckSelector();
-            renderDeckCards();
-            await openModal({
-              title: '가져오기 완료',
-              subtitle: `[${importedDeck.name}] 덱을 성공적으로 불러왔습니다.`,
-              confirmText: '확인'
-            });
-          }
-        } catch (err) {
-          await openModal({
-            title: '가져오기 실패',
-            subtitle: '올바른 덱 JSON 파일 형식이 아닙니다.',
-            confirmText: '확인'
-          });
+    bodyColorPresetBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const color = this.getAttribute('data-body-color');
+        if (cardBaseBgColorInput) {
+          cardBaseBgColorInput.value = color;
+          if (currentCardSide === 'front') drawCard();
         }
-      };
-      reader.readAsText(file);
-      e.target.value = '';
-    });
-
-    shareDeckBtn.addEventListener('click', async () => {
-      const deck = getCurrentDeck();
-      const exportData = {
-        name: deck.name,
-        maxCards: deck.maxCards,
-        cards: deck.cards.map(c => ({
-          name: c.name,
-          sub: c.sub,
-          count: c.count,
-          category: c.category,
-          hp: c.hp,
-          cardType: c.cardType,
-          isEx: c.isEx
-        }))
-      };
-
-      const jsonStr = JSON.stringify(exportData);
-      const code = 'ALBBADECK:' + btoa(encodeURIComponent(jsonStr));
-
-      await openModal({
-        title: '덱 코드 공유',
-        subtitle: '아래 텍스트 덱 코드를 복사하여 다른 플레이어와 공유하세요.',
-        inputType: 'textarea',
-        initialValue: code,
-        confirmText: '닫기'
       });
     });
 
-    importDeckCodeBtn.addEventListener('click', async () => {
-      const inputCode = await openModal({
-        title: '덱 코드 입력',
-        subtitle: '공유받은 ALBBADECK:... 덱 코드를 붙여넣으세요.',
-        inputType: 'textarea',
-        confirmText: '가져오기',
-        cancelText: '취소'
-      });
-
-      if (inputCode && inputCode.trim().startsWith('ALBBADECK:')) {
-        try {
-          const base64 = inputCode.trim().replace('ALBBADECK:', '');
-          const jsonStr = decodeURIComponent(atob(base64));
-          const parsed = JSON.parse(jsonStr);
-
-          if (parsed && parsed.name && Array.isArray(parsed.cards)) {
-            const newDeck = {
-              id: 'deck_' + Date.now(),
-              name: parsed.name + ' (코드)',
-              maxCards: parsed.maxCards || 60,
-              cards: parsed.cards.map(c => ({
-                ...c,
-                thumbnail: canvas.toDataURL('image/jpeg', 0.5)
-              }))
+    if (textureUploadInput) {
+      textureUploadInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+              currentTextureImg = img;
+              if (textureStatusLabel) {
+                textureStatusLabel.textContent = file.name.length > 14 ? file.name.substring(0, 12) + '...' : file.name;
+                textureStatusLabel.className = 'text-[11px] text-indigo-600 font-bold';
+              }
+              if (currentCardSide === 'front') drawCard();
             };
-            decks.push(newDeck);
-            currentDeckId = newDeck.id;
-            saveDecksToStorage();
-            renderDeckSelector();
-            renderDeckCards();
-          }
-        } catch (e) {
-          await openModal({
-            title: '코드 오류',
-            subtitle: '유효하지 않은 덱 코드입니다.',
-            confirmText: '확인'
-          });
+            img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
         }
+      });
+    }
+
+    if (textureOpacityInput) {
+      textureOpacityInput.addEventListener('input', function() {
+        if (textureOpacityDisplay) {
+          textureOpacityDisplay.textContent = `${this.value}%`;
+        }
+        if (currentCardSide === 'front') drawCard();
+      });
+    }
+
+    if (textureBlendModeSelect) {
+      textureBlendModeSelect.addEventListener('change', () => {
+        if (currentCardSide === 'front') drawCard();
+      });
+    }
+
+    if (resetTextureBtn) {
+      resetTextureBtn.addEventListener('click', () => {
+        textureUploadInput.value = '';
+        currentTextureImg = null;
+        if (textureStatusLabel) {
+          textureStatusLabel.textContent = '선택된 텍스처 없음';
+          textureStatusLabel.className = 'text-[11px] text-slate-400 font-medium';
+        }
+        if (currentCardSide === 'front') drawCard();
+      });
+    }
+
+    cardBaseBgUploadInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+            currentCardBaseBg = img;
+            if (currentCardSide === 'front') drawCard();
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
       }
     });
 
-    // ==========================================
-    // 8. 덱 이미지 일괄 ZIP 다운로드
-    // ==========================================
-    batchDownloadZipBtn.addEventListener('click', async () => {
-      const deck = getCurrentDeck();
-      if (!deck.cards || deck.cards.length === 0) {
-        await openModal({
-          title: '다운로드 불가',
-          subtitle: '덱에 카드가 없습니다. 먼저 카드를 추가해주세요.',
-          confirmText: '확인'
-        });
-        return;
-      }
-
-      if (typeof JSZip === 'undefined') {
-        await openModal({
-          title: '오류',
-          subtitle: '압축 라이브러리(JSZip)를 로드할 수 없습니다.',
-          confirmText: '확인'
-        });
-        return;
-      }
-
-      progressModal.classList.remove('hidden');
-      progressTitle.textContent = '300 DPI 일괄 렌더링 중...';
-      progressBarFill.style.width = '0%';
-      progressPercent.textContent = '0%';
-
-      const zip = new JSZip();
-      const folderStd = zip.folder('01_일반규격_300DPI_63x88mm');
-      const folderBleed = zip.folder('02_재단도련포함_300DPI_67x92mm');
-
-      // 1. 공통 뒷면 렌더링
-      const backCanvas = document.createElement('canvas');
-      backCanvas.width = 1500;
-      backCanvas.height = 2100;
-      const bctx = backCanvas.getContext('2d');
-      drawOfficialBack(bctx, 1500, 2100);
-      const backBlob = await new Promise(r => backCanvas.toBlob(r, 'image/png'));
-      zip.file('00_카드공통뒷면_300DPI.png', backBlob);
-
-      // 2. 덱 명세서 텍스트
-      let manifest = `[ ${deck.name} ] - 총 ${deck.cards.reduce((s, c) => s + c.count, 0)}장\n`;
-      manifest += `생성일: ${new Date().toLocaleString()}\n`;
-      manifest += `----------------------------------------\n`;
-      deck.cards.forEach((c, idx) => {
-        manifest += `${idx + 1}. ${c.name} (${c.sub}) × ${c.count}장\n`;
-      });
-      zip.file('덱_인쇄_발주_명세서.txt', manifest);
-
-      // 3. 각 카드 순차 렌더링
-      const totalCards = deck.cards.length;
-      for (let i = 0; i < totalCards; i++) {
-        const card = deck.cards[i];
-        progressSubtitle.textContent = `렌더링 중: ${card.name} (${i + 1}/${totalCards})`;
-
-        // 임시 렌더링 캔버스 생성
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = 750;
-        tempCanvas.height = 1050;
-        const tctx = tempCanvas.getContext('2d');
-
-        // 상태 일시 교체 후 그리기
-        const oldCtx = ctx;
-        // 간이 렌더: 썸네일 기반 또는 폼 데이터 렌더
-        const img = new Image();
-        img.src = card.thumbnail;
-        await new Promise(res => { img.onload = res; img.onerror = res; });
-        tctx.drawImage(img, 0, 0, 750, 1050);
-
-        // 300 DPI 일반용 (1500x2100)
-        const stdCanvas = document.createElement('canvas');
-        stdCanvas.width = 1500;
-        stdCanvas.height = 2100;
-        const sctx = stdCanvas.getContext('2d');
-        sctx.imageSmoothingEnabled = true;
-        sctx.imageSmoothingQuality = 'high';
-        sctx.drawImage(tempCanvas, 0, 0, 1500, 2100);
-        const stdBlob = await new Promise(r => stdCanvas.toBlob(r, 'image/png'));
-
-        // 300 DPI 2mm 도련용 (1596x2196)
-        const bleedCanvas = document.createElement('canvas');
-        bleedCanvas.width = 1596;
-        bleedCanvas.height = 2196;
-        const blctx = bleedCanvas.getContext('2d');
-        blctx.imageSmoothingEnabled = true;
-        blctx.imageSmoothingQuality = 'high';
-        blctx.fillStyle = card.borderColor || '#f59e0b';
-        blctx.fillRect(0, 0, 1596, 2196);
-        blctx.drawImage(tempCanvas, 48, 48, 1500, 2100);
-        const bleedBlob = await new Promise(r => bleedCanvas.toBlob(r, 'image/png'));
-
-        const safeCardName = `${String(i + 1).padStart(2, '0')}_${card.name.replace(/[/\\?%*:|"<>]/g, '_')}_x${card.count}`;
-        folderStd.file(`${safeCardName}.png`, stdBlob);
-        folderBleed.file(`${safeCardName}_bleed2mm.png`, bleedBlob);
-
-        const pct = Math.round(((i + 1) / totalCards) * 90);
-        progressBarFill.style.width = `${pct}%`;
-        progressPercent.textContent = `${pct}%`;
-      }
-
-      progressTitle.textContent = 'ZIP 압축 패키징 중...';
-      const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata) => {
-        const pct = 90 + Math.round(metadata.percent * 0.1);
-        progressBarFill.style.width = `${pct}%`;
-        progressPercent.textContent = `${pct}%`;
-      });
-
-      progressModal.classList.add('hidden');
-
-      const zipUrl = URL.createObjectURL(zipBlob);
-      const a = document.createElement('a');
-      a.href = zipUrl;
-      a.download = `${deck.name.replace(/[/\\?%*:|"<>]/g, '_')}_300DPI_인쇄패키지.zip`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(zipUrl);
+    resetCardBaseBgBtn.addEventListener('click', function() {
+      cardBaseBgUploadInput.value = '';
+      currentCardBaseBg = null;
+      if (currentCardSide === 'front') drawCard();
     });
 
-    // ==========================================
-    // 9. 단독 카드 다운로드 (300 DPI & 2mm 도련)
-    // ==========================================
+    imageUploadInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+            currentImage = img;
+            isDefaultImage = false;
+            drawCard();
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    frameBgUploadInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+            currentFrameBg = img;
+            if (isDefaultImage) {
+              currentImage = createDefaultArtwork(false);
+              currentImage.onload = () => {
+                if (currentCardSide === 'front') drawCard();
+              };
+            }
+            if (currentCardSide === 'front') drawCard();
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    resetFrameBgBtn.addEventListener('click', function() {
+      frameBgUploadInput.value = '';
+      currentFrameBg = null;
+      if (isDefaultImage) {
+        currentImage = createDefaultArtwork(true);
+        currentImage.onload = () => {
+          if (currentCardSide === 'front') drawCard();
+        };
+      }
+      if (currentCardSide === 'front') drawCard();
+    });
+
+    resetImageBtn.addEventListener('click', function() {
+      imageUploadInput.value = '';
+      currentImage = createDefaultArtwork(!currentFrameBg);
+      isDefaultImage = true;
+      currentImage.onload = () => {
+        if (currentCardSide === 'front') drawCard();
+      };
+      if (currentCardSide === 'front') drawCard();
+    });
+
+    backImageUploadInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+            currentBackImage = img;
+            isDefaultBackImage = false;
+            setCardSide('back');
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    resetBackImageBtn.addEventListener('click', function() {
+      backImageUploadInput.value = '';
+      currentBackImage = null;
+      isDefaultBackImage = true;
+      setCardSide('back');
+    });
+
+    colorPresetBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const col = this.getAttribute('data-color');
+        borderColorInput.value = col;
+        if (currentCardSide === 'front') {
+          drawCard();
+        } else {
+          setCardSide('front');
+        }
+      });
+    });
+
+    if (isMove1AbilityInput) {
+      isMove1AbilityInput.addEventListener('change', function() {
+        if (this.checked) {
+          move1CostWrapper.classList.add('hidden');
+          move1NameWrapper.className = 'sm:col-span-3';
+          move1DmgWrapper.classList.add('hidden');
+          move1NameLabel.textContent = '특성 이름';
+          move1DescLabel.textContent = '특성 효과 설명문';
+          if (move1NameInput.value === '노래부르기') {
+            move1NameInput.value = '알빠노';
+            move1DescInput.value = '이 알빠몬이 배틀필드에 있는 한, 상대 알빠몬의 기술의 데미지를 -30 받는다.';
+          }
+        } else {
+          move1CostWrapper.classList.remove('hidden');
+          move1NameWrapper.className = 'sm:col-span-2';
+          move1DmgWrapper.classList.remove('hidden');
+          move1NameLabel.textContent = '기술 이름';
+          move1DescLabel.textContent = '설명문';
+          if (move1NameInput.value === '알빠노') {
+            move1NameInput.value = '노래부르기';
+            move1DescInput.value = '동전을 1회 던져서 앞면이 나오면 20데미지를 추가한다.';
+          }
+        }
+        if (currentCardSide === 'front') drawCard();
+      });
+    }
+
+    const allInputs = [
+      cardNameInput, cardHpInput, cardSubInput, borderColorInput,
+      preEvoNameInput,
+      move1CostInput, move1NameInput, move1DmgInput, move1DescInput,
+      move2CostInput, move2NameInput, move2DmgInput, move2DescInput,
+      trainerDescInput,
+      weaknessInput, resistanceInput, retreatInput, flavorTextInput, illustratorInput,
+      regulationMarkInput, setCardPackInput, collectionNumInput, cardRarityInput
+    ];
+
+    allInputs.forEach(input => {
+      if (input) {
+        input.addEventListener('input', () => {
+          if (currentCardSide === 'front') drawCard();
+        });
+        input.addEventListener('change', () => {
+          if (currentCardSide === 'front') drawCard();
+        });
+      }
+    });
+
+    isExCardInput.addEventListener('change', () => {
+      if (currentCardSide === 'front') drawCard();
+    });
+
+    // PNG 300 DPI metadata injection
     function setPngDpi(dataUrl, dpi = 300) {
       const ppm = Math.round(dpi / 0.0254);
       const binary = atob(dataUrl.split(',')[1]);
       const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
 
       if (bytes[0] !== 0x89 || bytes[1] !== 0x50) return dataUrl;
 
@@ -2510,12 +2320,14 @@
       chunkData[7] = ppm & 0xff;
       chunkData[8] = 1;
 
-      const type = [0x70, 0x48, 0x59, 0x73]; // 'pHYs'
+      const type = [0x70, 0x48, 0x59, 0x73];
       let crc = 0xffffffff;
       const crcTable = [];
       for (let n = 0; n < 256; n++) {
         let c = n;
-        for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+        for (let k = 0; k < 8; k++) {
+          c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+        }
         crcTable[n] = c;
       }
       for (let b of type) crc = crcTable[(crc ^ b) & 0xff] ^ (crc >>> 8);
@@ -2544,6 +2356,7 @@
       return 'data:image/png;base64,' + btoa(newBinary);
     }
 
+    // Download Single Card
     function downloadCardImage(includeBleed = false) {
       const rawName = cardNameInput.value.trim() || 'albbamon_card';
       const safeName = rawName.replace(/[/\\?%*:|"<>]/g, '_');
@@ -2561,16 +2374,18 @@
         exportCanvas.height = 2100;
         expCtx.drawImage(canvas, 0, 0, 1500, 2100);
       } else {
-        const bleedPx = 48; // 2mm
-        exportCanvas.width = 1500 + bleedPx * 2;
-        exportCanvas.height = 2100 + bleedPx * 2;
+        const bleedPx = 48;
+        const bleedW = 1500 + bleedPx * 2;
+        const bleedH = 2100 + bleedPx * 2;
+        exportCanvas.width = bleedW;
+        exportCanvas.height = bleedH;
 
         if (currentCardSide === 'front') {
           expCtx.fillStyle = borderColorInput.value || '#f59e0b';
         } else {
           expCtx.fillStyle = '#0a0a0a';
         }
-        expCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+        expCtx.fillRect(0, 0, bleedW, bleedH);
         expCtx.drawImage(canvas, bleedPx, bleedPx, 1500, 2100);
       }
 
@@ -2587,372 +2402,636 @@
 
     downloadBtn.addEventListener('click', () => downloadCardImage(false));
     downloadBtnTop.addEventListener('click', () => downloadCardImage(false));
-    downloadBleedBtn.addEventListener('click', () => downloadCardImage(true));
-    downloadBleedBtnTop.addEventListener('click', () => downloadCardImage(true));
+    if (downloadBleedBtn) downloadBleedBtn.addEventListener('click', () => downloadCardImage(true));
+    if (downloadBleedBtnTop) downloadBleedBtnTop.addEventListener('click', () => downloadCardImage(true));
 
-    // ==========================================
-    // 10. 뷰 전환 및 이벤트 리스너 바인딩
-    // ==========================================
-    function setCardSide(side) {
-      currentCardSide = side;
-      if (side === 'front') {
-        viewFrontBtn.className = 'px-2.5 py-1 text-xs font-bold rounded-md bg-white text-blue-600 shadow-sm transition';
-        viewBackBtn.className = 'px-2.5 py-1 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition';
-        canvasSideIndicator.textContent = '● 현재 보기: 앞면';
-        drawCard();
-      } else {
-        viewBackBtn.className = 'px-2.5 py-1 text-xs font-bold rounded-md bg-white text-blue-600 shadow-sm transition';
-        viewFrontBtn.className = 'px-2.5 py-1 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition';
-        canvasSideIndicator.textContent = '● 현재 보기: 뒷면';
-        drawCardBack();
-      }
+    // Custom Modal Helpers
+    function showModal(title, bodyHtml, onConfirm) {
+      modalTitle.textContent = title;
+      modalBody.innerHTML = bodyHtml;
+      modalConfirmCallback = onConfirm;
+      customModal.classList.remove('hidden');
     }
 
-    viewFrontBtn.addEventListener('click', () => setCardSide('front'));
-    viewBackBtn.addEventListener('click', () => setCardSide('back'));
-    flipCardBtn.addEventListener('click', () => {
-      setCardSide(currentCardSide === 'front' ? 'back' : 'front');
+    function closeModal() {
+      customModal.classList.add('hidden');
+      modalConfirmCallback = null;
+    }
+
+    modalCancelBtn.addEventListener('click', closeModal);
+    modalConfirmBtn.addEventListener('click', () => {
+      if (modalConfirmCallback) modalConfirmCallback();
+      closeModal();
     });
 
-    function setArtType(type) {
-      cardArtType = type;
-      if (type === 'standard') {
-        artTypeStandardBtn.className = 'art-type-btn flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-sm bg-white text-slate-900 border border-slate-200';
-        artTypeFullBtn.className = 'art-type-btn flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900';
-        if (frameBgWrapper) frameBgWrapper.classList.remove('hidden');
-      } else {
-        artTypeFullBtn.className = 'art-type-btn flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all shadow-sm bg-amber-500 text-white font-extrabold shadow-amber-200';
-        artTypeStandardBtn.className = 'art-type-btn flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900';
-        if (frameBgWrapper) frameBgWrapper.classList.add('hidden');
-      }
-      if (currentCardSide === 'front') drawCard();
+    // Deck System Implementation
+    function getCurrentDeck() {
+      return decks.find(d => d.id === currentDeckId) || decks[0];
     }
 
-    artTypeStandardBtn.addEventListener('click', () => setArtType('standard'));
-    artTypeFullBtn.addEventListener('click', () => setArtType('full'));
-
-    function updateStageButtonStyles(selectedStage) {
-      stageBtns.forEach(btn => {
-        if (btn.getAttribute('data-stage') === selectedStage) {
-          btn.className = 'stage-btn py-2 px-3 rounded-lg text-xs font-extrabold transition-all border border-blue-500 bg-blue-50 text-blue-700 shadow-sm flex items-center justify-center gap-1.5';
-        } else {
-          btn.className = 'stage-btn py-2 px-3 rounded-lg text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 flex items-center justify-center gap-1.5';
-        }
-      });
-      if (cardCategory === 'albbamon' && (selectedStage.includes('1진화') || selectedStage.includes('2진화'))) {
-        preEvoWrapper.classList.remove('hidden');
-      } else {
-        preEvoWrapper.classList.add('hidden');
+    function saveDecksToStorage() {
+      try {
+        localStorage.setItem('albbamon_decks_v2', JSON.stringify(decks));
+        localStorage.setItem('albbamon_current_deck_id', currentDeckId);
+      } catch (e) {
+        console.warn('LocalStorage 저장 실패:', e);
       }
     }
 
-    function updateTrainerButtonStyles(selectedType) {
-      trainerTypeBtns.forEach(btn => {
-        if (btn.getAttribute('data-trainer-type') === selectedType) {
-          btn.className = 'trainer-type-btn py-2 px-2.5 rounded-lg text-xs font-extrabold transition-all border border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm flex items-center justify-center gap-1';
-        } else {
-          btn.className = 'trainer-type-btn py-2 px-2.5 rounded-lg text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 flex items-center justify-center gap-1';
+    function loadDecksFromStorage() {
+      try {
+        const saved = localStorage.getItem('albbamon_decks_v2');
+        if (saved) {
+          decks = JSON.parse(saved);
         }
+        const savedCur = localStorage.getItem('albbamon_current_deck_id');
+        if (savedCur && decks.some(d => d.id === savedCur)) {
+          currentDeckId = savedCur;
+        }
+      } catch (e) {
+        console.warn('LocalStorage 로드 실패:', e);
+      }
+    }
+
+    function updateDeckSelector() {
+      deckSelect.innerHTML = '';
+      decks.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.id;
+        opt.textContent = `${d.name} (${d.cards.reduce((sum, c) => sum + (c.count || 1), 0)} / ${d.maxCards || 60}장)`;
+        if (d.id === currentDeckId) opt.selected = true;
+        deckSelect.appendChild(opt);
       });
     }
 
-    function setCardCategory(cat) {
-      cardCategory = cat;
-      const baseBtnClass = 'card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-white/60';
+    function updateDeckUI() {
+      const deck = getCurrentDeck();
+      const totalCount = deck.cards.reduce((sum, c) => sum + (c.count || 1), 0);
+      const maxCount = deck.maxCards || 60;
 
-      cardCategoryAlbbamonBtn.className = baseBtnClass;
-      cardCategoryTrainerBtn.className = baseBtnClass;
-      cardCategoryEnergyBtn.className = baseBtnClass;
+      deckCountBadge.textContent = `${totalCount} / ${maxCount}장`;
+      if (totalCount === maxCount) {
+        deckCountBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200';
+      } else if (totalCount > maxCount) {
+        deckCountBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-50 text-rose-700 border border-rose-200 animate-pulse';
+      } else {
+        deckCountBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-50 text-blue-700 border border-blue-200';
+      }
 
-      if (cat === 'albbamon') {
-        cardCategoryAlbbamonBtn.className = 'card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all shadow-sm bg-white text-blue-600 border border-slate-200/80 hover:shadow';
-        trainerAlbbamonLabel.classList.remove('hidden');
-        cardHpInput.parentElement.classList.remove('hidden');
-        albbamonTypeSelector.classList.remove('hidden');
-        albbamonStageButtons.classList.remove('hidden');
-        trainerStageButtons.classList.add('hidden');
-        illustrationSettingsSection.classList.remove('hidden');
-        albbamonMovesContainer.classList.remove('hidden');
-        trainerTextContainer.classList.add('hidden');
-        statusInputGrid.classList.remove('hidden');
-        bottomMetaWrapper.classList.remove('hidden');
-        trainerNotice.classList.add('hidden');
-        updateStageButtonStyles(cardSubInput.value);
-      } else if (cat === 'trainer') {
-        cardCategoryTrainerBtn.className = 'card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all shadow-sm bg-emerald-600 text-white shadow-emerald-200';
-        trainerAlbbamonLabel.classList.add('hidden');
+      deckCardList.innerHTML = '';
+      if (deck.cards.length === 0) {
+        deckCardList.innerHTML = `
+          <div class="p-6 text-center border-2 border-dashed border-slate-200 rounded-xl text-slate-400 text-xs">
+            덱에 담긴 카드가 없습니다.<br>
+            <span class="font-bold text-slate-600">'현재 카드를 덱에 담기'</span>를 눌러보세요!
+          </div>
+        `;
+        return;
+      }
+
+      deck.cards.forEach((cardItem, idx) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 transition group';
+        itemEl.innerHTML = `
+          <div class="flex items-center gap-2.5 overflow-hidden cursor-pointer flex-1" title="클릭 시 카드 편집 폼으로 복원">
+            <img src="${cardItem.thumbUrl}" class="w-10 h-14 rounded-md object-cover border border-slate-300 shadow-sm shrink-0">
+            <div class="overflow-hidden">
+              <h4 class="text-xs font-black text-slate-800 truncate">${cardItem.name}</h4>
+              <p class="text-[10px] text-slate-500 font-medium">${cardItem.sub} ${cardItem.hp ? `• HP ${cardItem.hp}` : ''}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0 ml-2">
+            <button type="button" class="btn-card-minus w-6 h-6 rounded-md bg-white border border-slate-300 text-xs font-black hover:bg-slate-200 transition flex items-center justify-center">-</button>
+            <span class="text-xs font-black text-indigo-600 w-5 text-center">${cardItem.count || 1}</span>
+            <button type="button" class="btn-card-plus w-6 h-6 rounded-md bg-white border border-slate-300 text-xs font-black hover:bg-slate-200 transition flex items-center justify-center">+</button>
+            <button type="button" class="btn-card-del ml-1 text-slate-400 hover:text-rose-600 p-1 transition" title="카드 삭제">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        `;
+
+        itemEl.querySelector('.btn-card-minus').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (cardItem.count > 1) {
+            cardItem.count--;
+          } else {
+            deck.cards.splice(idx, 1);
+          }
+          saveDecksToStorage();
+          updateDeckSelector();
+          updateDeckUI();
+        });
+
+        itemEl.querySelector('.btn-card-plus').addEventListener('click', (e) => {
+          e.stopPropagation();
+          cardItem.count = (cardItem.count || 1) + 1;
+          saveDecksToStorage();
+          updateDeckSelector();
+          updateDeckUI();
+        });
+
+        itemEl.querySelector('.btn-card-del').addEventListener('click', (e) => {
+          e.stopPropagation();
+          deck.cards.splice(idx, 1);
+          saveDecksToStorage();
+          updateDeckSelector();
+          updateDeckUI();
+        });
+
+        itemEl.addEventListener('click', () => {
+          restoreCardToForm(cardItem);
+        });
+
+        deckCardList.appendChild(itemEl);
+      });
+    }
+
+    function captureCurrentCardData() {
+      return {
+        id: 'card_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        name: cardNameInput.value.trim(),
+        sub: cardSubInput.value.trim(),
+        hp: cardHpInput.value.trim(),
+        category: cardCategory,
+        type: currentCardType,
+        isEx: isExCardInput.checked,
+        isTrainerMon: isTrainerAlbbamonInput.checked,
+        trainerPrefix: trainerPrefixInput.value.trim(),
+        preEvo: preEvoNameInput.value.trim(),
+        borderColor: borderColorInput.value,
+        baseBgColor: cardBaseBgColorInput.value,
+        artType: cardArtType,
+        isAbility1: isMove1AbilityInput.checked,
+        m1Cost: move1CostInput.value,
+        m1Name: move1NameInput.value,
+        m1Dmg: move1DmgInput.value,
+        m1Desc: move1DescInput.value,
+        m2Cost: move2CostInput.value,
+        m2Name: move2NameInput.value,
+        m2Dmg: move2DmgInput.value,
+        m2Desc: move2DescInput.value,
+        trainerDesc: trainerDescInput.value,
+        weakness: weaknessInput.value,
+        resistance: resistanceInput.value,
+        retreat: retreatInput.value,
+        flavor: flavorTextInput.value,
+        illustrator: illustratorInput.value,
+        regMark: regulationMarkInput.value,
+        setPack: setCardPackInput.value,
+        colNum: collectionNumInput.value,
+        rarity: cardRarityInput.value,
+        thumbUrl: canvas.toDataURL('image/jpeg', 0.65),
+        count: 1
+      };
+    }
+
+    function restoreCardToForm(c) {
+      setCardCategory(c.category || 'albbamon');
+      setArtType(c.artType || 'standard');
+      currentCardType = c.type || 'madness';
+      updateTypeButtonStyles(currentCardType);
+
+      cardNameInput.value = c.name || '';
+      cardSubInput.value = c.sub || '';
+      cardHpInput.value = c.hp || '';
+      isExCardInput.checked = !!c.isEx;
+      isTrainerAlbbamonInput.checked = !!c.isTrainerMon;
+      trainerPrefixInput.value = c.trainerPrefix || '';
+      preEvoNameInput.value = c.preEvo || '';
+      borderColorInput.value = c.borderColor || '#f59e0b';
+      cardBaseBgColorInput.value = c.baseBgColor || '#ffffff';
+
+      isMove1AbilityInput.checked = !!c.isAbility1;
+      move1CostInput.value = c.m1Cost || '';
+      move1NameInput.value = c.m1Name || '';
+      move1DmgInput.value = c.m1Dmg || '';
+      move1DescInput.value = c.m1Desc || '';
+
+      move2CostInput.value = c.m2Cost || '';
+      move2NameInput.value = c.m2Name || '';
+      move2DmgInput.value = c.m2Dmg || '';
+      move2DescInput.value = c.m2Desc || '';
+
+      trainerDescInput.value = c.trainerDesc || '';
+      weaknessInput.value = c.weakness || '';
+      resistanceInput.value = c.resistance || '';
+      retreatInput.value = c.retreat || '';
+      flavorTextInput.value = c.flavor || '';
+      illustratorInput.value = c.illustrator || '';
+      regulationMarkInput.value = c.regMark || '';
+      setCardPackInput.value = c.setPack || '';
+      collectionNumInput.value = c.colNum || '';
+      cardRarityInput.value = c.rarity || '';
+
+      if (isTrainerAlbbamonInput.checked) {
+        trainerNameWrapper.classList.remove('hidden');
+      } else {
         trainerNameWrapper.classList.add('hidden');
-        cardHpInput.parentElement.classList.remove('hidden');
-        albbamonTypeSelector.classList.add('hidden');
-        albbamonStageButtons.classList.add('hidden');
-        trainerStageButtons.classList.remove('hidden');
-        illustrationSettingsSection.classList.remove('hidden');
-        albbamonMovesContainer.classList.add('hidden');
-        trainerTextContainer.classList.remove('hidden');
-        statusInputGrid.classList.add('hidden');
-        bottomMetaWrapper.classList.remove('hidden');
-        trainerNotice.classList.remove('hidden');
-        updateTrainerButtonStyles(cardSubInput.value);
-      } else if (cat === 'energy') {
-        cardCategoryEnergyBtn.className = 'card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all shadow-sm bg-amber-500 text-white shadow-amber-200';
-        trainerAlbbamonLabel.classList.add('hidden');
-        trainerNameWrapper.classList.add('hidden');
-        cardHpInput.parentElement.classList.add('hidden');
-        albbamonTypeSelector.classList.remove('hidden');
-        albbamonStageButtons.classList.add('hidden');
-        trainerStageButtons.classList.add('hidden');
-        illustrationSettingsSection.classList.add('hidden');
-        albbamonMovesContainer.classList.add('hidden');
-        trainerTextContainer.classList.add('hidden');
-        statusInputGrid.classList.add('hidden');
-        bottomMetaWrapper.classList.add('hidden');
-        trainerNotice.classList.remove('hidden');
       }
-      if (currentCardSide === 'front') drawCard();
+
+      setCardSide('front');
+      drawCard();
     }
 
-    cardCategoryAlbbamonBtn.addEventListener('click', () => setCardCategory('albbamon'));
-    cardCategoryTrainerBtn.addEventListener('click', () => setCardCategory('trainer'));
-    cardCategoryEnergyBtn.addEventListener('click', () => setCardCategory('energy'));
+    addCardToDeckBtn.addEventListener('click', () => {
+      const deck = getCurrentDeck();
+      const cardData = captureCurrentCardData();
 
-    function updateTypeButtonStyles(selectedType) {
-      document.querySelectorAll('.type-btn').forEach(btn => {
-        const typeKey = btn.getAttribute('data-type');
-        if (typeKey === selectedType) {
-          if (typeKey === 'madness') btn.className = 'type-btn py-2 px-3 rounded-lg text-xs font-black transition-all border border-red-500 bg-red-50 text-red-600 shadow-sm flex items-center justify-center gap-1.5';
-          else if (typeKey === 'depression') btn.className = 'type-btn py-2 px-3 rounded-lg text-xs font-black transition-all border border-blue-500 bg-blue-50 text-blue-600 shadow-sm flex items-center justify-center gap-1.5';
-          else if (typeKey === 'purity') btn.className = 'type-btn py-2 px-3 rounded-lg text-xs font-black transition-all border border-emerald-500 bg-emerald-50 text-emerald-600 shadow-sm flex items-center justify-center gap-1.5';
-        } else {
-          btn.className = 'type-btn py-2 px-3 rounded-lg text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 flex items-center justify-center gap-1.5';
-        }
-      });
-    }
-
-    document.querySelectorAll('.type-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        currentCardType = this.getAttribute('data-type');
-        updateTypeButtonStyles(currentCardType);
-        if (currentCardSide === 'front') drawCard();
-      });
-    });
-
-    isTrainerAlbbamonInput.addEventListener('change', function() {
-      trainerNameWrapper.classList.toggle('hidden', !this.checked);
-      if (currentCardSide === 'front') drawCard();
-    });
-
-    stageBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        const stage = this.getAttribute('data-stage');
-        cardSubInput.value = stage;
-        updateStageButtonStyles(stage);
-        if (currentCardSide === 'front') drawCard();
-      });
-    });
-
-    trainerTypeBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        const type = this.getAttribute('data-trainer-type');
-        cardSubInput.value = type;
-        updateTrainerButtonStyles(type);
-        if (currentCardSide === 'front') drawCard();
-      });
-    });
-
-    colorPresetBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        borderColorInput.value = this.getAttribute('data-color');
-        if (currentCardSide === 'front') drawCard();
-      });
-    });
-
-    bodyColorPresetBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        cardBaseBgColorInput.value = this.getAttribute('data-body-color');
-        if (currentCardSide === 'front') drawCard();
-      });
-    });
-
-    isMove1AbilityInput.addEventListener('change', function() {
-      if (this.checked) {
-        move1CostWrapper.classList.add('hidden');
-        move1NameWrapper.className = 'sm:col-span-3';
-        move1DmgWrapper.classList.add('hidden');
-        move1NameLabel.textContent = '특성 이름';
-        move1DescLabel.textContent = '특성 효과 설명문';
+      const existing = deck.cards.find(c => c.name === cardData.name && c.sub === cardData.sub);
+      if (existing) {
+        existing.count = (existing.count || 1) + 1;
       } else {
-        move1CostWrapper.classList.remove('hidden');
-        move1NameWrapper.className = 'sm:col-span-2';
-        move1DmgWrapper.classList.remove('hidden');
-        move1NameLabel.textContent = '기술 이름';
-        move1DescLabel.textContent = '설명문';
+        deck.cards.push(cardData);
       }
-      if (currentCardSide === 'front') drawCard();
+
+      saveDecksToStorage();
+      updateDeckSelector();
+      updateDeckUI();
     });
 
-    // 이미지 및 파일 업로드 핸들러
-    imageUploadInput.addEventListener('change', (e) => {
+    deckSelect.addEventListener('change', () => {
+      currentDeckId = deckSelect.value;
+      saveDecksToStorage();
+      updateDeckUI();
+    });
+
+    newDeckBtn.addEventListener('click', () => {
+      showModal(
+        '새 덱 만들기',
+        `
+          <label class="block text-xs font-bold text-slate-700 mb-1">덱 이름</label>
+          <input id="modalInputDeckName" type="text" value="새 덱" maxlength="20" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none mb-3">
+          <label class="block text-xs font-bold text-slate-700 mb-1">목표 카드 장수 (기본 60장)</label>
+          <input id="modalInputDeckMax" type="number" value="60" min="1" max="200" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        `,
+        () => {
+          const nameInput = document.getElementById('modalInputDeckName');
+          const maxInput = document.getElementById('modalInputDeckMax');
+          const dName = nameInput ? nameInput.value.trim() : '새 덱';
+          const dMax = maxInput ? parseInt(maxInput.value, 10) || 60 : 60;
+          const newId = 'deck_' + Date.now();
+
+          decks.push({
+            id: newId,
+            name: dName || '새 덱',
+            maxCards: dMax,
+            cards: []
+          });
+          currentDeckId = newId;
+          saveDecksToStorage();
+          updateDeckSelector();
+          updateDeckUI();
+        }
+      );
+    });
+
+    editDeckNameBtn.addEventListener('click', () => {
+      const deck = getCurrentDeck();
+      showModal(
+        '덱 이름 변경',
+        `
+          <label class="block text-xs font-bold text-slate-700 mb-1">새로운 덱 이름</label>
+          <input id="modalInputDeckName" type="text" value="${deck.name}" maxlength="20" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        `,
+        () => {
+          const nameInput = document.getElementById('modalInputDeckName');
+          if (nameInput && nameInput.value.trim()) {
+            deck.name = nameInput.value.trim();
+            saveDecksToStorage();
+            updateDeckSelector();
+            updateDeckUI();
+          }
+        }
+      );
+    });
+
+    setDeckCapacityBtn.addEventListener('click', () => {
+      const deck = getCurrentDeck();
+      showModal(
+        '덱 목표 카드 장수 설정',
+        `
+          <label class="block text-xs font-bold text-slate-700 mb-1">목표 장수 입력 (장)</label>
+          <input id="modalInputDeckMax" type="number" value="${deck.maxCards || 60}" min="1" max="200" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <p class="text-[11px] text-slate-400 mt-1">※ 포켓몬 정규 룰: 60장 / 하프 덱: 30장 / 포켓 TCG: 20장</p>
+        `,
+        () => {
+          const maxInput = document.getElementById('modalInputDeckMax');
+          if (maxInput) {
+            deck.maxCards = parseInt(maxInput.value, 10) || 60;
+            saveDecksToStorage();
+            updateDeckSelector();
+            updateDeckUI();
+          }
+        }
+      );
+    });
+
+    clearDeckBtn.addEventListener('click', () => {
+      const deck = getCurrentDeck();
+      showModal(
+        '덱 비우기 확인',
+        `<p class="text-xs text-slate-600">현재 덱(<strong>${deck.name}</strong>)에 담긴 모든 카드를 삭제하시겠습니까?</p>`,
+        () => {
+          deck.cards = [];
+          saveDecksToStorage();
+          updateDeckSelector();
+          updateDeckUI();
+        }
+      );
+    });
+
+    deleteDeckBtn.addEventListener('click', () => {
+      if (decks.length <= 1) {
+        showModal('알림', '<p class="text-xs text-rose-600">최소 1개의 덱은 유지되어야 합니다.</p>', null);
+        return;
+      }
+      const deck = getCurrentDeck();
+      showModal(
+        '덱 삭제 확인',
+        `<p class="text-xs text-slate-600"><strong>${deck.name}</strong> 덱을 완전히 삭제하시겠습니까?</p>`,
+        () => {
+          decks = decks.filter(d => d.id !== deck.id);
+          currentDeckId = decks[0].id;
+          saveDecksToStorage();
+          updateDeckSelector();
+          updateDeckUI();
+        }
+      );
+    });
+
+    saveDeckFileBtn.addEventListener('click', () => {
+      const deck = getCurrentDeck();
+      const exportData = {
+        app: 'albbamon_deck',
+        version: '2.0',
+        deck: deck
+      };
+      const jsonStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${deck.name.replace(/[/\\?%*:|"<>]/g, '_')}_deck.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
+
+    loadDeckFileTrigger.addEventListener('click', () => {
+      loadDeckFileInput.click();
+    });
+
+    loadDeckFileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => { currentImage = img; isDefaultImage = false; if (currentCardSide === 'front') drawCard(); };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          if (parsed && parsed.deck) {
+            const importedDeck = parsed.deck;
+            importedDeck.id = 'deck_' + Date.now();
+            importedDeck.name = importedDeck.name + ' (복원됨)';
+            decks.push(importedDeck);
+            currentDeckId = importedDeck.id;
+            saveDecksToStorage();
+            updateDeckSelector();
+            updateDeckUI();
+            showModal('성공', `<p class="text-xs text-emerald-600 font-bold">'${importedDeck.name}' 덱이 성공적으로 복원되었습니다!</p>`, null);
+          }
+        } catch (err) {
+          showModal('오류', '<p class="text-xs text-rose-600">올바른 덱 백업 JSON 파일이 아닙니다.</p>', null);
+        }
+      };
+      reader.readAsText(file);
+      loadDeckFileInput.value = '';
+    });
+
+    shareDeckBtn.addEventListener('click', () => {
+      const deck = getCurrentDeck();
+      const simpleData = {
+        name: deck.name,
+        maxCards: deck.maxCards,
+        cards: deck.cards.map(c => ({
+          name: c.name,
+          count: c.count || 1,
+          category: c.category,
+          type: c.type,
+          hp: c.hp,
+          sub: c.sub
+        }))
+      };
+      const b64 = btoa(encodeURIComponent(JSON.stringify(simpleData)));
+      const shareUrl = `${window.location.origin}${window.location.pathname}?deck=${b64}`;
+
+      showModal(
+        '덱 공유하기',
+        `
+          <p class="text-xs text-slate-600 mb-2">아래의 링크를 복사하여 다른 플레이어와 덱 구성을 공유하세요.</p>
+          <input id="shareUrlInput" type="text" readonly value="${shareUrl}" class="w-full px-2.5 py-1.5 text-xs bg-slate-100 border border-slate-300 rounded-lg select-all">
+          <p id="shareCopyFeedback" class="text-[11px] text-emerald-600 font-bold mt-1.5 hidden">✓ 링크가 클립보드에 복사되었습니다!</p>
+        `,
+        () => {
+          const input = document.getElementById('shareUrlInput');
+          if (input) {
+            input.select();
+            document.execCommand('copy');
+          }
+        }
+      );
+
+      setTimeout(() => {
+        const input = document.getElementById('shareUrlInput');
+        if (input) {
+          input.select();
+          try {
+            document.execCommand('copy');
+            const fb = document.getElementById('shareCopyFeedback');
+            if (fb) fb.classList.remove('hidden');
+          } catch (e) {}
+        }
+      }, 100);
+    });
+
+    // Batch Export All Deck Images to ZIP (300 DPI + 2mm Bleed + Back)
+    async function exportDeckImagesAsZip() {
+      const deck = getCurrentDeck();
+      if (!deck.cards || deck.cards.length === 0) {
+        showModal('알림', '<p class="text-xs text-rose-600 font-bold">덱에 카드가 없습니다. 먼저 카드를 담아주세요!</p>', null);
+        return;
       }
-    });
 
-    resetImageBtn.addEventListener('click', () => {
-      imageUploadInput.value = '';
-      currentImage = createDefaultArtwork(!currentFrameBg);
-      isDefaultImage = true;
-      currentImage.onload = () => { if (currentCardSide === 'front') drawCard(); };
-    });
+      progressModal.classList.remove('hidden');
+      progressBarFill.style.width = '0%';
+      progressPercentage.textContent = '0%';
+      progressStatusText.textContent = 'ZIP 압축 패키지 생성 준비 중...';
 
-    frameBgUploadInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            currentFrameBg = img;
-            if (isDefaultImage) {
-              currentImage = createDefaultArtwork(false);
-              currentImage.onload = () => { if (currentCardSide === 'front') drawCard(); };
-            } else if (currentCardSide === 'front') drawCard();
-          };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
+      const zip = new JSZip();
+      const folderStandard = zip.folder('01_일반규격_300DPI_63x88mm');
+      const folderBleed = zip.folder('02_재단도련포함_300DPI_67x92mm');
+      const folderBack = zip.folder('00_카드공통뒷면');
+
+      const totalTypes = deck.cards.length;
+      let processed = 0;
+
+      // 1. 공통 뒷면 고해상도 렌더링
+      const backStandardCanvas = document.createElement('canvas');
+      backStandardCanvas.width = 1500;
+      backStandardCanvas.height = 2100;
+      const bStdCtx = backStandardCanvas.getContext('2d');
+      drawOfficialBack(bStdCtx, 1500, 2100);
+      const bStdData = setPngDpi(backStandardCanvas.toDataURL('image/png', 1.0), 300);
+      folderBack.file('공통뒷면_일반_300dpi.png', bStdData.split(',')[1], { base64: true });
+
+      const backBleedCanvas = document.createElement('canvas');
+      backBleedCanvas.width = 1596;
+      backBleedCanvas.height = 2196;
+      const bBldCtx = backBleedCanvas.getContext('2d');
+      bBldCtx.fillStyle = '#0a0a0a';
+      bBldCtx.fillRect(0, 0, 1596, 2196);
+      bBldCtx.drawImage(backStandardCanvas, 48, 48, 1500, 2100);
+      const bBldData = setPngDpi(backBleedCanvas.toDataURL('image/png', 1.0), 300);
+      folderBack.file('공통뒷면_2mm도련_300dpi.png', bBldData.split(',')[1], { base64: true });
+
+      // 2. 덱 카드 순차적 300 DPI 렌더링
+      for (let i = 0; i < totalTypes; i++) {
+        const cardItem = deck.cards[i];
+        const safeName = (cardItem.name || `카드_${i + 1}`).replace(/[/\\?%*:|"<>]/g, '_');
+        const count = cardItem.count || 1;
+
+        progressStatusText.textContent = `렌더링 중 (${i + 1}/${totalTypes}): ${cardItem.name} (x${count}장)`;
+
+        restoreCardToForm(cardItem);
+        await new Promise(r => setTimeout(r, 60));
+
+        // 1) 일반 300 DPI (1500x2100)
+        const stdCanvas = document.createElement('canvas');
+        stdCanvas.width = 1500;
+        stdCanvas.height = 2100;
+        const sCtx = stdCanvas.getContext('2d');
+        sCtx.imageSmoothingQuality = 'high';
+        sCtx.drawImage(canvas, 0, 0, 1500, 2100);
+        const stdDataUrl = setPngDpi(stdCanvas.toDataURL('image/png', 1.0), 300);
+        const stdBase64 = stdDataUrl.split(',')[1];
+
+        // 2) 2mm 도련 300 DPI (1596x2196)
+        const bldCanvas = document.createElement('canvas');
+        bldCanvas.width = 1596;
+        bldCanvas.height = 2196;
+        const bCtx = bldCanvas.getContext('2d');
+        bCtx.imageSmoothingQuality = 'high';
+        bCtx.fillStyle = cardItem.borderColor || '#f59e0b';
+        bCtx.fillRect(0, 0, 1596, 2196);
+        bCtx.drawImage(canvas, 48, 48, 1500, 2100);
+        const bldDataUrl = setPngDpi(bldCanvas.toDataURL('image/png', 1.0), 300);
+        const bldBase64 = bldDataUrl.split(',')[1];
+
+        const filenameBase = `${String(i + 1).padStart(2, '0')}_${safeName}_(x${count}장)`;
+        folderStandard.file(`${filenameBase}_300dpi.png`, stdBase64, { base64: true });
+        folderBleed.file(`${filenameBase}_bleed_2mm_300dpi.png`, bldBase64, { base64: true });
+
+        processed++;
+        const percent = Math.round((processed / totalTypes) * 85);
+        progressBarFill.style.width = `${percent}%`;
+        progressPercentage.textContent = `${percent}%`;
       }
-    });
 
-    resetFrameBgBtn.addEventListener('click', () => {
-      frameBgUploadInput.value = '';
-      currentFrameBg = null;
-      if (isDefaultImage) {
-        currentImage = createDefaultArtwork(true);
-        currentImage.onload = () => { if (currentCardSide === 'front') drawCard(); };
-      } else if (currentCardSide === 'front') drawCard();
-    });
+      // 3. 발주 명세서 TXT 파일 생성
+      let specText = `=========================================\n`;
+      specText += `   알빠몬 카드 게임 (ALBBAMON CARD GAME)\n`;
+      specText += `   덱 인쇄 발주 명세서\n`;
+      specText += `=========================================\n\n`;
+      specText += `■ 덱 이름 : ${deck.name}\n`;
+      specText += `■ 총 카드 장수 : ${deck.cards.reduce((sum, c) => sum + (c.count || 1), 0)}장 (종류: ${totalTypes}종)\n`;
+      specText += `■ 인쇄 규격 : 63mm x 88mm (재단도련 포함: 67mm x 92mm)\n`;
+      specText += `■ 해상도 : 300 DPI 고해상도\n`;
+      specText += `■ 모서리 귀도리 : 5mm (R5)\n\n`;
+      specText += `[수록 카드 명단 및 수량]\n`;
+      deck.cards.forEach((c, idx) => {
+        specText += `${String(idx + 1).padStart(2, '0')}. ${c.name} [${c.sub || '기본'}] - ${c.count || 1}장\n`;
+      });
+      specText += `\n생성일시: ${new Date().toLocaleString()}\n`;
+      zip.file('덱_인쇄_발주_명세서.txt', specText);
 
-    textureUploadInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            currentTextureImg = img;
-            textureStatusLabel.textContent = file.name;
-            textureStatusLabel.className = 'text-[11px] text-indigo-600 font-bold';
-            if (currentCardSide === 'front') drawCard();
-          };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+      progressStatusText.textContent = 'ZIP 압축 파일 패키징 중...';
+      progressBarFill.style.width = '95%';
+      progressPercentage.textContent = '95%';
 
-    resetTextureBtn.addEventListener('click', () => {
-      textureUploadInput.value = '';
-      currentTextureImg = null;
-      textureStatusLabel.textContent = '선택된 텍스처 없음';
-      textureStatusLabel.className = 'text-[11px] text-slate-400 font-medium';
-      if (currentCardSide === 'front') drawCard();
-    });
+      const content = await zip.generateAsync({ type: 'blob' });
+      const zipUrl = URL.createObjectURL(content);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = zipUrl;
+      downloadLink.download = `${deck.name.replace(/[/\\?%*:|"<>]/g, '_')}_덱_300DPI_인쇄패키지.zip`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(zipUrl);
 
-    textureOpacityInput.addEventListener('input', function() {
-      textureOpacityDisplay.textContent = `${this.value}%`;
-      if (currentCardSide === 'front') drawCard();
-    });
+      progressBarFill.style.width = '100%';
+      progressPercentage.textContent = '100%';
+      progressStatusText.textContent = '다운로드가 완료되었습니다!';
 
-    textureBlendModeSelect.addEventListener('change', () => {
-      if (currentCardSide === 'front') drawCard();
-    });
+      setTimeout(() => {
+        progressModal.classList.add('hidden');
+      }, 900);
+    }
 
-    cardBaseBgUploadInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => { currentCardBaseBg = img; if (currentCardSide === 'front') drawCard(); };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+    batchDownloadZipBtn.addEventListener('click', exportDeckImagesAsZip);
 
-    resetCardBaseBgBtn.addEventListener('click', () => {
-      cardBaseBgUploadInput.value = '';
-      currentCardBaseBg = null;
-      if (currentCardSide === 'front') drawCard();
-    });
-
-    backImageUploadInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => { currentBackImage = img; setCardSide('back'); };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    resetBackImageBtn.addEventListener('click', () => {
-      backImageUploadInput.value = '';
-      currentBackImage = null;
-      setCardSide('back');
-    });
-
-    // 전체 입력 필드 실시간 렌더링 이벤트 등록
-    const allInputs = [
-      cardNameInput, cardHpInput, cardSubInput, borderColorInput,
-      trainerPrefixInput, preEvoNameInput, cardBaseBgColorInput,
-      move1CostInput, move1NameInput, move1DmgInput, move1DescInput,
-      move2CostInput, move2NameInput, move2DmgInput, move2DescInput,
-      trainerDescInput, weaknessInput, resistanceInput, retreatInput, flavorTextInput, illustratorInput,
-      regulationMarkInput, setCardPackInput, collectionNumInput, cardRarityInput
-    ];
-
-    allInputs.forEach(input => {
-      if (input) {
-        input.addEventListener('input', () => { if (currentCardSide === 'front') drawCard(); });
-        input.addEventListener('change', () => { if (currentCardSide === 'front') drawCard(); });
-      }
-    });
-
-    isExCardInput.addEventListener('change', () => {
-      if (currentCardSide === 'front') drawCard();
-    });
-
-    // ==========================================
-    // 11. 초기화 (Init)
-    // ==========================================
+    // Initial Load & URL Parameter Check
     window.addEventListener('load', () => {
       loadDecksFromStorage();
-      renderDeckSelector();
-      renderDeckCards();
+      updateDeckSelector();
+      updateDeckUI();
 
       currentImage = createDefaultArtwork();
       currentImage.onload = () => {
         drawCard();
       };
 
+      // Check Shared URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const sharedDeckData = urlParams.get('deck');
+      if (sharedDeckData) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(atob(sharedDeckData)));
+          if (parsed && parsed.name) {
+            showModal(
+              '공유받은 덱 추가',
+              `<p class="text-xs text-slate-700"><strong>${parsed.name}</strong> (${parsed.cards.length}종) 덱을 내 보관함에 추가하시겠습니까?</p>`,
+              () => {
+                const newId = 'deck_' + Date.now();
+                decks.push({
+                  id: newId,
+                  name: parsed.name + ' (공유받음)',
+                  maxCards: parsed.maxCards || 60,
+                  cards: parsed.cards || []
+                });
+                currentDeckId = newId;
+                saveDecksToStorage();
+                updateDeckSelector();
+                updateDeckUI();
+              }
+            );
+          }
+        } catch (e) {
+          console.warn('URL 덱 파싱 실패:', e);
+        }
+      }
+
       if (document.fonts) {
         document.fonts.ready.then(() => {
-          if (currentCardSide === 'front') drawCard();
-          else drawCardBack();
+          if (currentCardSide === 'front') {
+            drawCard();
+          } else {
+            drawCardBack();
+          }
         });
       }
-      setTimeout(drawCard, 100);
+      setTimeout(drawCard, 150);
     });
   </script>
 </body>
