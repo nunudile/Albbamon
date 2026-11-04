@@ -1020,6 +1020,74 @@
       targetCtx.restore();
     }
 
+    // System Emoji Outline Cache & Renderer (Using Native Emoji with Crisp Pure Black Outline)
+    const emojiCache = {};
+    function getOutlinedEmojiCanvas(emoji, size, outlineWidth, outlineColor = '#000000', blur = 0) {
+      const key = `${emoji}_${size}_${outlineWidth}_${outlineColor}_${blur}`;
+      if (emojiCache[key]) return emojiCache[key];
+
+      const pad = Math.ceil(outlineWidth) + Math.ceil(blur) + 12;
+      const cW = size + pad * 2;
+      const cH = size + pad * 2;
+
+      const memCanvas = document.createElement('canvas');
+      memCanvas.width = cW;
+      memCanvas.height = cH;
+      const mctx = memCanvas.getContext('2d');
+
+      const emojiCanvas = document.createElement('canvas');
+      emojiCanvas.width = cW;
+      emojiCanvas.height = cH;
+      const ectx = emojiCanvas.getContext('2d');
+
+      // 1. 순수 시스템 이모지 렌더링
+      ectx.textAlign = 'center';
+      ectx.textBaseline = 'middle';
+      ectx.font = `${size}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+      ectx.fillText(emoji, cW / 2, cH / 2 + 1);
+
+      // 2. 이모지의 실루엣만을 추출하여 지정된 외곽선 색상 마스크 생성
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width = cW;
+      maskCanvas.height = cH;
+      const maskCtx = maskCanvas.getContext('2d');
+      maskCtx.drawImage(emojiCanvas, 0, 0);
+      maskCtx.globalCompositeOperation = 'source-in';
+      maskCtx.fillStyle = outlineColor;
+      maskCtx.fillRect(0, 0, cW, cH);
+
+      // 3. 다방향 정밀 오프셋 및 섀도우 블러 합성
+      if (blur > 0) {
+        mctx.shadowColor = outlineColor;
+        mctx.shadowBlur = blur;
+      }
+
+      const steps = 16;
+      for (let i = 0; i < steps; i++) {
+        const theta = (Math.PI * 2 / steps) * i;
+        const ox = Math.cos(theta) * outlineWidth;
+        const oy = Math.sin(theta) * outlineWidth;
+        mctx.drawImage(maskCanvas, ox, oy);
+      }
+
+      if (blur > 0) {
+        mctx.shadowBlur = 0;
+      }
+
+      // 4. 외곽선 위에 원본 시스템 이모지 합성
+      mctx.drawImage(emojiCanvas, 0, 0);
+
+      emojiCache[key] = { canvas: memCanvas, pad: pad };
+      return emojiCache[key];
+    }
+
+    function drawSystemEmojiOutlined(targetCtx, emoji, cx, cy, size, outlineWidth, outlineColor = '#000000', blur = 0) {
+      targetCtx.save();
+      const cached = getOutlinedEmojiCanvas(emoji, size, outlineWidth, outlineColor, blur);
+      targetCtx.drawImage(cached.canvas, cx - cached.canvas.width / 2, cy - cached.canvas.height / 2);
+      targetCtx.restore();
+    }
+
     // Default Front Artwork
     function createDefaultArtwork(includeBackground = true) {
       const artCanvas = document.createElement('canvas');
@@ -1434,19 +1502,17 @@
           const badgeCenterY = topHeaderY - 14;
 
           ctx.save();
+          // 원형 뱃지 배경
           ctx.beginPath();
           ctx.arc(badgeCenterX, badgeCenterY, badgeRadius, 0, Math.PI * 2);
           ctx.fillStyle = typeInfo.bgColor;
           ctx.fill();
-
           ctx.lineWidth = 3;
           ctx.strokeStyle = '#ffffff';
           ctx.stroke();
 
-          ctx.font = '24px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(typeInfo.icon, badgeCenterX, badgeCenterY + 2);
+          // 시스템 이모지 순수 블랙 외곽선 렌더링
+          drawSystemEmojiOutlined(ctx, typeInfo.icon, badgeCenterX, badgeCenterY, 26, 1.3);
           ctx.restore();
 
           rightCursorX = badgeCenterX - badgeRadius - 10;
@@ -1497,10 +1563,18 @@
         ctx.strokeStyle = '#ffffff';
         ctx.stroke();
 
+        // 기본 에너지 카드 중앙 대형 시스템 이모지 - 인위적 테두리를 제거하고 배경에 은은하게 녹아드는 소프트 앰비언트 섀도우 적용
+        ctx.save();
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = '150px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
-        ctx.fillText(typeInfo.icon, centerX, centerY + 10);
+        // 은은하고 부드러운 확산형 섀도우 (경계선 없이 자연스럽게 번짐)
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.14)';
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 4;
+        ctx.globalAlpha = 0.94;
+        ctx.fillText(typeInfo.icon, centerX, centerY + 6);
         ctx.restore();
 
       } else if (cardCategory === 'trainer') {
