@@ -1088,6 +1088,20 @@
       targetCtx.restore();
     }
 
+    // 에너지 기호 전용 자간 조절 드로잉 함수 (문자/이모지 단위로 분리하여 자간을 좁혀 렌더링)
+    function drawTightCostSymbols(targetCtx, costText, startX, baselineY, charGap = -4) {
+      if (!costText) return 0;
+      // 복합 이모지 및 대리쌍(surrogate pair)을 안전하게 분리
+      const symbols = Array.from(costText);
+      let curX = startX;
+      for (const sym of symbols) {
+        targetCtx.fillText(sym, curX, baselineY);
+        const w = targetCtx.measureText(sym).width;
+        curX += Math.max(0, w + charGap);
+      }
+      return curX - startX;
+    }
+
     // Default Front Artwork
     function createDefaultArtwork(includeBackground = true) {
       const artCanvas = document.createElement('canvas');
@@ -1615,7 +1629,7 @@
         ctx.textAlign = 'left';
 
         if (isAbility) {
-          const badgeWidth = 88;
+          const badgeWidth = FIXED_MOVE_NAME_OFFSET - 12; // 기술명 시작 위치(130px) 바로 앞(118px)까지 배지 확장
           const badgeHeight = 27;
           const badgeX = attackTextLeft;
           const badgeY = m1Y - 1;
@@ -1629,7 +1643,7 @@
           ctx.font = 'italic 900 18px "Noto Sans KR", sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText('특성', badgeX + badgeWidth / 2 - 2, badgeY + badgeHeight / 2 + 1);
+          ctx.fillText('특성', badgeX + badgeWidth / 2, badgeY + badgeHeight / 2 + 1);
           ctx.restore();
 
           ctx.fillStyle = '#dc2626';
@@ -1639,7 +1653,7 @@
           if (m1Cost) {
             ctx.fillStyle = '#0f172a';
             ctx.font = '700 24px "Noto Sans KR", sans-serif';
-            ctx.fillText(m1Cost, attackTextLeft, m1Y + 22);
+            drawTightCostSymbols(ctx, m1Cost, attackTextLeft, m1Y + 22, -4);
 
             ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
             ctx.fillText(m1Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m1Y + 22);
@@ -1675,7 +1689,7 @@
         if (m2Cost) {
           ctx.fillStyle = '#0f172a';
           ctx.font = '700 24px "Noto Sans KR", sans-serif';
-          ctx.fillText(m2Cost, attackTextLeft, m2Y + 22);
+          drawTightCostSymbols(ctx, m2Cost, attackTextLeft, m2Y + 22, -4);
 
           ctx.font = '800 28px "Gowun Dodum", "Noto Sans KR", sans-serif';
           ctx.fillText(m2Name, attackTextLeft + FIXED_MOVE_NAME_OFFSET, m2Y + 22);
