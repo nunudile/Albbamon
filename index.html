@@ -32,6 +32,12 @@
         </div>
       </div>
       <div class="hidden sm:flex items-center gap-2">
+        <button id="batchImportBtnTop" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95 text-xs sm:text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          카드 대량 일괄 생성
+        </button>
         <button id="downloadBtnTop" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 font-bold rounded-xl shadow-md transition-all active:scale-95 text-xs sm:text-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -64,7 +70,12 @@
                 <span class="w-2 h-2 rounded-full bg-blue-600"></span>
                 카드 종류 (대분류)
               </label>
-              <span class="text-[11px] text-slate-400 font-medium">원하는 카드 형식을 선택하세요</span>
+              <div class="flex items-center gap-2">
+                <button type="button" id="openFormImportBtn" class="sm:hidden text-xs text-indigo-600 hover:text-indigo-800 font-bold underline">
+                  양식으로 생성
+                </button>
+                <span class="text-[11px] text-slate-400 font-medium">원하는 카드 형식을 선택하세요</span>
+              </div>
             </div>
             <div class="grid grid-cols-3 gap-2.5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 shadow-inner">
               <button type="button" id="cardCategoryAlbbamon" class="card-category-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all shadow-sm bg-white text-blue-600 border border-slate-200/80 hover:shadow">
@@ -601,12 +612,19 @@
                 </button>
                 <input id="loadDeckFileInput" type="file" accept=".json" class="hidden">
                 <button id="shareDeckBtn" type="button" class="flex-1 py-1.5 px-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1">
-                  <span>🔗</span> 덱 공유
-                </button>
-              </div>
+                <span>🔗</span> 덱 공유
+              </button>
             </div>
 
-            <!-- Deck Card List -->
+            <!-- Batch Import Trigger in Deck Area -->
+            <div class="pt-2">
+              <button id="batchImportBtnDeck" type="button" class="w-full py-2 px-3 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-300 hover:border-emerald-300 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                <span>📋</span> 텍스트 양식으로 여러 카드 한 번에 덱에 추가
+              </button>
+            </div>
+          </div>
+
+          <!-- Deck Card List -->
             <div id="deckCardList" class="space-y-2 max-h-[360px] overflow-y-auto pr-1">
               <!-- Rendered via JS -->
             </div>
@@ -643,6 +661,37 @@
     </div>
   </div>
 
+  <!-- Form Template Import Modal -->
+  <div id="formImportModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-indigo-600"></span>
+          <h3 class="text-base font-black text-slate-900">양식 제출로 카드 일괄 생성</h3>
+        </div>
+        <button id="closeFormImportBtn" type="button" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-500">
+        아래 텍스트 폼에 카드 정보를 채운 뒤 <strong>제출하기</strong>를 누르면 카드 내용이 한 번에 자동 입력됩니다.
+      </p>
+
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-700">작성 양식 (Text or JSON)</span>
+        <button id="copyTemplateTextBtn" type="button" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold underline flex items-center gap-1">
+          <span>📋</span> 기본 텍스트 양식 복사
+        </button>
+      </div>
+
+      <textarea id="formImportTextarea" rows="12" class="w-full flex-1 p-3 text-xs font-mono bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none leading-relaxed text-slate-800"></textarea>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+        <button id="cancelFormImportBtn" type="button" class="px-4 py-2 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-100 transition">취소</button>
+        <button id="submitFormImportBtn" type="button" class="px-5 py-2 text-xs font-black rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md active:scale-95 transition">양식 제출 및 카드 생성</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Progress Bar Modal (Batch ZIP) -->
   <div id="progressModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
@@ -657,6 +706,44 @@
         <div id="progressBarFill" class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full w-0 transition-all duration-150"></div>
       </div>
       <p id="progressPercentage" class="text-xs font-black text-blue-600">0%</p>
+    </div>
+  </div>
+
+  <!-- Batch Import Modal -->
+  <div id="batchImportModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <h3 class="text-base font-black text-slate-800">여러 카드 한 번에 일괄 생성 (Batch Import)</h3>
+        </div>
+        <button id="batchImportCloseBtn" type="button" class="text-slate-400 hover:text-slate-600 text-lg font-bold leading-none">&times;</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-3 text-xs text-slate-600 pr-1">
+        <div class="flex items-center justify-between flex-wrap gap-2 bg-emerald-50/70 p-3 rounded-xl border border-emerald-200 text-emerald-900">
+          <div>
+            <p class="font-bold">여러 장의 카드 정보를 '---' 구분선으로 나누어 입력하세요.</p>
+            <p class="text-[11px] text-emerald-700">작성한 카드들은 현재 활성화된 덱에 지정한 수량만큼 즉시 추가됩니다.</p>
+          </div>
+          <button id="copySampleTemplateBtn" type="button" class="px-2.5 py-1 bg-white border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition shadow-sm">
+            예시 템플릿 복사하기
+          </button>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">카드 양식 텍스트 또는 JSON 붙여넣기:</label>
+          <textarea id="batchImportInput" rows="11" class="w-full p-3 font-mono text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-none leading-relaxed" placeholder="이곳에 양식을 붙여넣으세요..."></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <span id="batchImportCountFeedback" class="text-xs font-bold text-slate-500">0개의 카드가 감지되었습니다.</span>
+        <div class="flex items-center gap-2">
+          <button id="batchImportCancelBtn" type="button" class="px-4 py-2 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100 transition">취소</button>
+          <button id="batchImportSubmitBtn" type="button" class="px-5 py-2 text-xs font-black rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md active:scale-95 transition">덱에 일괄 추가하기</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -789,6 +876,40 @@
     const modalConfirmBtn = document.getElementById('modalConfirmBtn');
     let modalConfirmCallback = null;
 
+    // Form Import Modal Elements
+    const formImportModal = document.getElementById('formImportModal');
+    const openFormImportBtn = document.getElementById('openFormImportBtn');
+    const openFormImportBtnTop = document.getElementById('openFormImportBtnTop');
+    const closeFormImportBtn = document.getElementById('closeFormImportBtn');
+    const cancelFormImportBtn = document.getElementById('cancelFormImportBtn');
+    const submitFormImportBtn = document.getElementById('submitFormImportBtn');
+    const copyTemplateTextBtn = document.getElementById('copyTemplateTextBtn');
+    const formImportTextarea = document.getElementById('formImportTextarea');
+
+    const DEFAULT_FORM_TEMPLATE = `분류: 알빠몬
+이름: 라이츄
+HP: 130
+타입: 광기
+세부분류: 1진화
+진화전: 피카츄
+ex: false
+테두리색: #f59e0b
+특성여부: true
+기술1_이름: 번개 발전소
+기술1_설명: 자신의 덱에서 에너지를 1장 선택하여 벤치 알빠몬에게 붙인다.
+기술2_비용: 🔥🔥✶
+기술2_이름: 10만볼트
+기술2_데미지: 120
+기술2_설명: 이 알빠몬에게 붙어 있는 에너지를 모두 트래쉬한다.
+약점: 🍀×2
+저항력: 
+후퇴: ✶
+도감설명: 꼬리를 접지하여 고압 전류를 방출한다.
+일러스트레이터: Illus. Custom Creator
+카드팩: ABN1
+컬렉션번호: 026/045
+레어도: R`;
+
     // Progress Modal
     const progressModal = document.getElementById('progressModal');
     const progressBarFill = document.getElementById('progressBarFill');
@@ -885,6 +1006,51 @@
         }
       }
       ctx.fillText(line, x, currentY);
+    }
+
+    // Helper: 가변 높이에 맞춘 스마트 텍스트 래퍼 (설명문이 길 경우 폰트 크기 및 행간을 자동 축소하여 넘침 방지)
+    function wrapDynamicText(ctx, text, x, y, maxWidth, maxHeight, baseFontSize = 17, minFontSize = 11.5) {
+      if (!text) return;
+      const chars = text.split('');
+      let bestFontSize = baseFontSize;
+      let bestLineHeight = baseFontSize * 1.35;
+      let bestLines = [];
+
+      for (let size = baseFontSize; size >= minFontSize; size -= 0.5) {
+        const lineH = Math.round(size * 1.32);
+        ctx.font = `500 ${size}px "Noto Sans KR", sans-serif`;
+
+        const lines = [];
+        let curLine = '';
+
+        for (let i = 0; i < chars.length; i++) {
+          const testLine = curLine + chars[i];
+          if (ctx.measureText(testLine).width > maxWidth && i > 0) {
+            lines.push(curLine);
+            curLine = chars[i];
+          } else {
+            curLine = testLine;
+          }
+        }
+        if (curLine) lines.push(curLine);
+
+        const totalHeight = lines.length * lineH;
+        if (totalHeight <= maxHeight || size === minFontSize) {
+          bestFontSize = size;
+          bestLineHeight = lineH;
+          bestLines = lines;
+          break;
+        }
+      }
+
+      ctx.font = `500 ${bestFontSize}px "Noto Sans KR", sans-serif`;
+      bestLines.forEach((lineText, idx) => {
+        const lineY = y + (idx * bestLineHeight);
+        // 하단 한계선 넘침 최종 방어
+        if (lineY <= y + maxHeight) {
+          ctx.fillText(lineText, x, lineY);
+        }
+      });
     }
 
     // Helper: Multiline text wrap
@@ -1550,6 +1716,7 @@
         }
       }
 
+      // 원래 기술 영역 시작 위치로 복원 (55px 간격)
       const attackStartY = margin + 115 + 430 + 55;
       const attackBoxMargin = margin + 28;
       const attackBoxWidth = W - attackBoxMargin * 2;
@@ -1594,7 +1761,7 @@
       } else if (cardCategory === 'trainer') {
         if (cardArtType === 'full') {
           ctx.save();
-          roundRect(ctx, attackBoxMargin, attackStartY - 24, attackBoxWidth, 180, 18);
+          roundRect(ctx, attackBoxMargin, attackStartY - 24, attackBoxWidth, 210, 18);
           ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
           ctx.fill();
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
@@ -1611,7 +1778,7 @@
       } else {
         if (cardArtType === 'full') {
           ctx.save();
-          roundRect(ctx, attackBoxMargin, attackStartY - 24, attackBoxWidth, 215, 18);
+          roundRect(ctx, attackBoxMargin, attackStartY - 20, attackBoxWidth, 240, 18);
           ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
           ctx.fill();
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
@@ -1640,10 +1807,10 @@
           ctx.fill();
 
           ctx.fillStyle = '#ffffff';
-          ctx.font = 'italic 900 18px "Noto Sans KR", sans-serif';
+          ctx.font = 'italic 900 16px "Noto Sans KR", sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText('특성', badgeX + badgeWidth / 2, badgeY + badgeHeight / 2 + 1);
+          ctx.fillText('특    성', badgeX + badgeWidth / 2, badgeY + badgeHeight / 2 + 1);
           ctx.restore();
 
           ctx.fillStyle = '#dc2626';
@@ -1671,16 +1838,16 @@
         ctx.textAlign = 'left';
         ctx.fillStyle = '#334155';
         ctx.font = '500 17px "Noto Sans KR", sans-serif';
-        wrapText(ctx, move1DescInput.value || '', attackTextLeft, m1Y + 54, attackDescWidth, 23, 2);
+        wrapText(ctx, move1DescInput.value || '', attackTextLeft, m1Y + 50, attackDescWidth, 22, 2);
 
         ctx.strokeStyle = cardArtType === 'full' ? 'rgba(148, 163, 184, 0.5)' : '#e2e8f0';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(attackBoxMargin + 10, attackStartY + 95);
-        ctx.lineTo(W - attackBoxMargin - 10, attackStartY + 95);
+        ctx.moveTo(attackBoxMargin + 10, attackStartY + 92);
+        ctx.lineTo(W - attackBoxMargin - 10, attackStartY + 92);
         ctx.stroke();
 
-        // --- MOVE 2 ---
+        // --- MOVE 2 --- (원래 간격인 attackStartY + 118로 복원)
         const m2Y = attackStartY + 118;
         const m2Cost = (move2CostInput.value || '').trim();
         const m2Name = move2NameInput.value || '';
@@ -1705,11 +1872,15 @@
 
         ctx.textAlign = 'left';
         ctx.fillStyle = '#334155';
-        ctx.font = '500 17px "Noto Sans KR", sans-serif';
-        wrapText(ctx, move2DescInput.value || '', attackTextLeft, m2Y + 54, attackDescWidth, 23, 2);
+        // 원래 상태 바 한계선 기준(H - margin - 120)에 맞춘 스마트 가변 래퍼 적용
+        const statusBoxLimitY = H - margin - 120;
+        const m2DescStartY = m2Y + 50;
+        const m2MaxAvailHeight = Math.max(45, statusBoxLimitY - m2DescStartY);
+
+        wrapDynamicText(ctx, move2DescInput.value || '', attackTextLeft, m2DescStartY, attackDescWidth, m2MaxAvailHeight, 17, 11);
       }
 
-      // 5. 하단 상태 바 (알빠몬 전용)
+      // 5. 하단 상태 바 (원래 위치 H - margin - 112 및 높이 52px로 완전 복원)
       if (cardCategory === 'albbamon') {
         const statusBoxY = H - margin - 112;
         const statusMargin = margin + 34;
@@ -1719,7 +1890,7 @@
         ctx.fillStyle = cardArtType === 'full' ? 'rgba(255, 255, 255, 0.75)' : '#f8fafc';
         ctx.strokeStyle = cardArtType === 'full' ? 'rgba(255, 255, 255, 0.85)' : '#cbd5e1';
         ctx.lineWidth = 1.5;
-        roundRect(ctx, statusMargin, statusBoxY - 8, statusBoxWidth, 52, 10);
+        roundRect(ctx, statusMargin, statusBoxY - 6, statusBoxWidth, 52, 10);
         ctx.fill();
         ctx.stroke();
 
@@ -1751,10 +1922,10 @@
         ctx.strokeStyle = '#e2e8f0';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(statusMargin + colWidth, statusBoxY - 2);
-        ctx.lineTo(statusMargin + colWidth, statusBoxY + 38);
-        ctx.moveTo(statusMargin + colWidth * 2, statusBoxY - 2);
-        ctx.lineTo(statusMargin + colWidth * 2, statusBoxY + 38);
+        ctx.moveTo(statusMargin + colWidth, statusBoxY - 1);
+        ctx.lineTo(statusMargin + colWidth, statusBoxY + 40);
+        ctx.moveTo(statusMargin + colWidth * 2, statusBoxY - 1);
+        ctx.lineTo(statusMargin + colWidth * 2, statusBoxY + 40);
         ctx.stroke();
       }
 
@@ -2512,6 +2683,123 @@
       closeModal();
     });
 
+    // Form Import Modal Handling
+    function openFormModal() {
+      if (!formImportTextarea.value.trim()) {
+        formImportTextarea.value = DEFAULT_FORM_TEMPLATE;
+      }
+      formImportModal.classList.remove('hidden');
+    }
+
+    function closeFormModal() {
+      formImportModal.classList.add('hidden');
+    }
+
+    if (openFormImportBtn) openFormImportBtn.addEventListener('click', openFormModal);
+    if (openFormImportBtnTop) openFormImportBtnTop.addEventListener('click', openFormModal);
+    if (closeFormImportBtn) closeFormImportBtn.addEventListener('click', closeFormModal);
+    if (cancelFormImportBtn) cancelFormImportBtn.addEventListener('click', closeFormModal);
+
+    if (copyTemplateTextBtn) {
+      copyTemplateTextBtn.addEventListener('click', () => {
+        formImportTextarea.value = DEFAULT_FORM_TEMPLATE;
+        formImportTextarea.select();
+        document.execCommand('copy');
+        showModal('복사 완료', '<p class="text-xs text-emerald-600 font-bold">기본 양식 템플릿이 클립보드에 복사되었습니다! 수정 후 제출해 보세요.</p>', null);
+      });
+    }
+
+    // Parse Submitted Form Data (Supports Plain text Key: Value & JSON)
+    function parseAndApplyFormData(rawText) {
+      const trimmed = (rawText || '').trim();
+      if (!trimmed) return;
+
+      // 1. JSON 시도
+      if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+        try {
+          const json = JSON.parse(trimmed);
+          restoreCardToForm(json);
+          return true;
+        } catch (e) {}
+      }
+
+      // 2. 라인별 Key-Value 파싱
+      const lines = trimmed.split('\n');
+      const kv = {};
+
+      for (const line of lines) {
+        const colonIdx = line.indexOf(':');
+        if (colonIdx > -1) {
+          const key = line.substring(0, colonIdx).trim().toLowerCase().replace(/[\s_]/g, '');
+          const val = line.substring(colonIdx + 1).trim();
+          kv[key] = val;
+        }
+      }
+
+      // 카테고리 매핑
+      let category = 'albbamon';
+      const catVal = (kv['분류'] || kv['category'] || '').toLowerCase();
+      if (catVal.includes('트레이너') || catVal.includes('trainer')) category = 'trainer';
+      else if (catVal.includes('에너지') || catVal.includes('energy')) category = 'energy';
+
+      // 속성 타입 매핑
+      let type = currentCardType;
+      const typeVal = (kv['타입'] || kv['type'] || '').toLowerCase();
+      if (typeVal.includes('광기') || typeVal.includes('madness') || typeVal.includes('불')) type = 'madness';
+      else if (typeVal.includes('우울') || typeVal.includes('depression') || typeVal.includes('물')) type = 'depression';
+      else if (typeVal.includes('순수') || typeVal.includes('purity') || typeVal.includes('풀')) type = 'purity';
+
+      const isEx = (kv['ex'] === 'true' || kv['ex'] === 'o' || kv['ex'] === '예');
+      const isAbility1 = (kv['특성여부'] === 'true' || kv['특성'] === 'true' || kv['isability'] === 'true' || kv['특성여부'] === 'o');
+
+      const cardData = {
+        category: category,
+        type: type,
+        name: kv['이름'] || kv['카드이름'] || kv['name'] || '',
+        sub: kv['세부분류'] || kv['stage'] || kv['sub'] || (category === 'trainer' ? '서포트' : '기본 알빠몬'),
+        hp: kv['hp'] || '',
+        isEx: isEx,
+        preEvo: kv['진화전'] || kv['preevo'] || '',
+        borderColor: kv['테두리색'] || kv['bordercolor'] || borderColorInput.value,
+        baseBgColor: kv['바탕색'] || kv['bgcolor'] || cardBaseBgColorInput.value,
+        isAbility1: isAbility1,
+        m1Cost: kv['기술1비용'] || kv['move1cost'] || '',
+        m1Name: kv['기술1이름'] || kv['특성이름'] || kv['move1name'] || '',
+        m1Dmg: kv['기술1데미지'] || kv['move1dmg'] || '',
+        m1Desc: kv['기술1설명'] || kv['특성설명'] || kv['move1desc'] || '',
+        m2Cost: kv['기술2비용'] || kv['move2cost'] || '',
+        m2Name: kv['기술2이름'] || kv['move2name'] || '',
+        m2Dmg: kv['기술2데미지'] || kv['move2dmg'] || '',
+        m2Desc: kv['기술2설명'] || kv['move2desc'] || '',
+        trainerDesc: kv['트레이너효과'] || kv['효과'] || kv['trainerdesc'] || '',
+        weakness: kv['약점'] || kv['weakness'] || '',
+        resistance: kv['저항력'] || kv['resistance'] || '',
+        retreat: kv['후퇴'] || kv['retreat'] || '',
+        flavor: kv['도감설명'] || kv['flavor'] || '',
+        illustrator: kv['일러스트레이터'] || kv['illustrator'] || '',
+        regMark: kv['레귤레이션'] || kv['regmark'] || '',
+        setPack: kv['카드팩'] || kv['setpack'] || '',
+        colNum: kv['컬렉션번호'] || kv['colnum'] || '',
+        rarity: kv['레어도'] || kv['rarity'] || ''
+      };
+
+      restoreCardToForm(cardData);
+      return true;
+    }
+
+    if (submitFormImportBtn) {
+      submitFormImportBtn.addEventListener('click', () => {
+        const text = formImportTextarea.value;
+        try {
+          parseAndApplyFormData(text);
+          closeFormModal();
+          showModal('생성 완료', '<p class="text-xs text-emerald-600 font-bold">제출된 양식으로 카드가 성공적으로 생성 및 렌더링되었습니다!</p>', null);
+        } catch (e) {
+          showModal('오류', '<p class="text-xs text-rose-600">양식을 파싱하는 중 오류가 발생했습니다. 양식을 다시 확인해 주세요.</p>', null);
+        }
+      });
+    }
+
     // Deck System Implementation
     function getCurrentDeck() {
       return decks.find(d => d.id === currentDeckId) || decks[0];
@@ -2866,6 +3154,270 @@
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+    });
+
+    // Batch Card Import Logic
+    const batchImportBtnTop = document.getElementById('batchImportBtnTop');
+    const batchImportBtnDeck = document.getElementById('batchImportBtnDeck');
+    const batchImportModal = document.getElementById('batchImportModal');
+    const batchImportCloseBtn = document.getElementById('batchImportCloseBtn');
+    const batchImportCancelBtn = document.getElementById('batchImportCancelBtn');
+    const batchImportSubmitBtn = document.getElementById('batchImportSubmitBtn');
+    const batchImportInput = document.getElementById('batchImportInput');
+    const copySampleTemplateBtn = document.getElementById('copySampleTemplateBtn');
+    const batchImportCountFeedback = document.getElementById('batchImportCountFeedback');
+
+    const SAMPLE_BATCH_TEMPLATE = `이름: 피카츄
+대분류: 알빠몬
+HP: 70
+타입: 광기
+분류: 기본 알빠몬
+기술1_기호: 🔥
+기술1_이름: 몸통박치기
+기술1_데미지: 20
+기술1_설명: 상대에게 20데미지를 준다.
+기술2_기호: 🔥🔥
+기술2_이름: 10만볼트
+기술2_데미지: 60
+기술2_설명: 에너지를 1개 트래쉬한다.
+약점: 🍀×2
+후퇴: ✶
+수량: 2
+---
+이름: 라이츄
+대분류: 알빠몬
+HP: 130
+타입: 광기
+분류: 1진화
+진화전: 피카츄
+ex여부: true
+특성여부: true
+기술1_이름: 번개충전
+기술1_설명: 자신의 차례에 1회 사용할 수 있다. 덱에서 에너지를 1장 붙인다.
+기술2_기호: 🔥🔥🔥
+기술2_이름: 기가스파크
+기술2_데미지: 140
+기술2_설명: 동전을 던져 뒷면이면 이 알빠몬에게도 30데미지를 준다.
+약점: 🍀×2
+후퇴: ✶✶
+수량: 1
+---
+이름: 박사의 연구
+대분류: 트레이너스
+분류: 서포트
+효과: 자신의 패를 모두 트래쉬하고 덱을 7장 뽑는다.
+수량: 4
+---
+이름: 에너지 전송
+대분류: 트레이너스
+분류: 아이템
+효과: 자신의 덱에서 기본 에너지 카드를 1장 선택해서 상대에게 보여주고 패로 가져온다.
+수량: 2
+---
+이름: 기본 광기 에너지
+대분류: 에너지
+타입: 광기
+수량: 10`;
+
+    function parseSingleCardBlock(blockStr) {
+      const card = {
+        name: '미지 알빠몬',
+        category: 'albbamon',
+        type: 'madness',
+        hp: '70',
+        sub: '기본 알빠몬',
+        preEvo: '',
+        isEx: false,
+        isTrainerMon: false,
+        trainerPrefix: '',
+        isAbility1: false,
+        m1Cost: '🔥',
+        m1Name: '기술1',
+        m1Dmg: '',
+        m1Desc: '',
+        m2Cost: '',
+        m2Name: '',
+        m2Dmg: '',
+        m2Desc: '',
+        trainerDesc: '',
+        weakness: '',
+        resistance: '',
+        retreat: '✶',
+        flavor: '',
+        illustrator: 'Illus. Custom Creator',
+        regMark: 'A',
+        setPack: 'ABN1',
+        colNum: '001/045',
+        rarity: 'C',
+        borderColor: '#f59e0b',
+        count: 1
+      };
+
+      const lines = blockStr.split('\n');
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) return;
+        const separatorIdx = trimmed.indexOf(':');
+        if (separatorIdx === -1) return;
+
+        const key = trimmed.slice(0, separatorIdx).trim().toLowerCase().replace(/[\s_]/g, '');
+        const val = trimmed.slice(separatorIdx + 1).trim();
+
+        if (key === '이름' || key === 'name') card.name = val;
+        else if (key === '대분류' || key === 'category') {
+          if (val.includes('트레이너')) card.category = 'trainer';
+          else if (val.includes('에너지')) card.category = 'energy';
+          else card.category = 'albbamon';
+        }
+        else if (key === '타입' || key === 'type') {
+          if (val.includes('우울') || val.includes('depression') || val.includes('물')) card.type = 'depression';
+          else if (val.includes('순수') || val.includes('purity') || val.includes('풀')) card.type = 'purity';
+          else card.type = 'madness';
+        }
+        else if (key === 'hp' || key === '체력') card.hp = val;
+        else if (key === '분류' || key === '세부분류' || key === 'sub') card.sub = val;
+        else if (key === '진화전' || key === 'preevo') card.preEvo = val;
+        else if (key === 'ex여부' || key === 'isex') card.isEx = (val.toLowerCase() === 'true' || val === '예' || val === '1');
+        else if (key === '특성여부' || key === 'isability') card.isAbility1 = (val.toLowerCase() === 'true' || val === '예' || val === '1');
+        else if (key === '기술1기호' || key === '기술1에너지' || key === 'm1cost') card.m1Cost = val;
+        else if (key === '기술1이름' || key === '특성이름' || key === 'm1name') card.m1Name = val;
+        else if (key === '기술1데미지' || key === 'm1dmg') card.m1Dmg = val;
+        else if (key === '기술1설명' || key === '특성설명' || key === 'm1desc') card.m1Desc = val;
+        else if (key === '기술2기호' || key === '기술2에너지' || key === 'm2cost') card.m2Cost = val;
+        else if (key === '기술2이름' || key === 'm2name') card.m2Name = val;
+        else if (key === '기술2데미지' || key === 'm2dmg') card.m2Dmg = val;
+        else if (key === '기술2설명' || key === 'm2desc') card.m2Desc = val;
+        else if (key === '효과' || key === '트레이너효과' || key === 'trainerdesc') card.trainerDesc = val;
+        else if (key === '약점' || key === 'weakness') card.weakness = val;
+        else if (key === '저항력' || key === 'resistance') card.resistance = val;
+        else if (key === '후퇴' || key === 'retreat') card.retreat = val;
+        else if (key === '도감' || key === '설명문' || key === 'flavor') card.flavor = val;
+        else if (key === '레어도' || key === 'rarity') card.rarity = val;
+        else if (key === '테두리' || key === 'bordercolor') card.borderColor = val;
+        else if (key === '수량' || key === '장수' || key === 'count') {
+          card.count = Math.max(1, parseInt(val, 10) || 1);
+        }
+      });
+
+      // 테두리 색상 기본 보정
+      if (card.category === 'trainer') card.borderColor = '#059669';
+      else if (card.type === 'madness') card.borderColor = '#ef4444';
+      else if (card.type === 'depression') card.borderColor = '#0284c7';
+      else if (card.type === 'purity') card.borderColor = '#16a34a';
+
+      return card;
+    }
+
+    function parseBatchInputText(raw) {
+      const text = raw.trim();
+      if (!text) return [];
+
+      // JSON 배열 형태인 경우
+      if (text.startsWith('[') && text.endsWith(']')) {
+        try {
+          const arr = JSON.parse(text);
+          if (Array.isArray(arr)) {
+            return arr.map(item => ({
+              ...parseSingleCardBlock(''),
+              ...item,
+              count: Math.max(1, item.count || 1)
+            }));
+          }
+        } catch (e) {}
+      }
+
+      // '---' 또는 '===' 구분자 파싱
+      const blocks = text.split(/(?:^|\n)\s*(?:---|===)\s*(?:\n|$)/).map(b => b.trim()).filter(b => b.length > 0);
+      if (blocks.length === 0) return [];
+      return blocks.map(block => parseSingleCardBlock(block));
+    }
+
+    function openBatchImportModal() {
+      if (!batchImportInput.value.trim()) {
+        batchImportInput.value = SAMPLE_BATCH_TEMPLATE;
+      }
+      updateBatchCountFeedback();
+      batchImportModal.classList.remove('hidden');
+    }
+
+    function closeBatchImportModal() {
+      batchImportModal.classList.add('hidden');
+    }
+
+    function updateBatchCountFeedback() {
+      const cards = parseBatchInputText(batchImportInput.value);
+      const totalCount = cards.reduce((sum, c) => sum + (c.count || 1), 0);
+      batchImportCountFeedback.textContent = `${cards.length}종의 카드 (총 ${totalCount}장)가 감지되었습니다.`;
+    }
+
+    batchImportBtnTop.addEventListener('click', openBatchImportModal);
+    if (batchImportBtnDeck) batchImportBtnDeck.addEventListener('click', openBatchImportModal);
+    batchImportCloseBtn.addEventListener('click', closeBatchImportModal);
+    batchImportCancelBtn.addEventListener('click', closeBatchImportModal);
+
+    batchImportInput.addEventListener('input', updateBatchCountFeedback);
+
+    copySampleTemplateBtn.addEventListener('click', () => {
+      batchImportInput.value = SAMPLE_BATCH_TEMPLATE;
+      updateBatchCountFeedback();
+      try {
+        batchImportInput.select();
+        document.execCommand('copy');
+        copySampleTemplateBtn.textContent = '✓ 템플릿 복사 완료!';
+        setTimeout(() => {
+          copySampleTemplateBtn.textContent = '예시 템플릿 복사하기';
+        }, 1500);
+      } catch (e) {}
+    });
+
+    batchImportSubmitBtn.addEventListener('click', async () => {
+      const parsedCards = parseBatchInputText(batchImportInput.value);
+      if (parsedCards.length === 0) {
+        showModal('알림', '<p class="text-xs text-rose-600 font-bold">인식 가능한 카드 데이터가 없습니다. 양식을 확인해 주세요.</p>', null);
+        return;
+      }
+
+      closeBatchImportModal();
+
+      // 프로그레스 바 표시하면서 카드들을 순차 렌더링 후 썸네일과 함께 덱에 추가
+      progressModal.classList.remove('hidden');
+      progressBarFill.style.width = '0%';
+      progressPercentage.textContent = '0%';
+      progressStatusText.textContent = `총 ${parsedCards.length}종의 카드를 덱에 등록하는 중...`;
+
+      const deck = getCurrentDeck();
+
+      for (let i = 0; i < parsedCards.length; i++) {
+        const c = parsedCards[i];
+        progressStatusText.textContent = `카드 렌더링 중 (${i + 1}/${parsedCards.length}): ${c.name}`;
+
+        restoreCardToForm(c);
+        await new Promise(r => setTimeout(r, 45));
+
+        const cardData = captureCurrentCardData();
+        cardData.count = c.count || 1;
+
+        const existing = deck.cards.find(item => item.name === cardData.name && item.sub === cardData.sub);
+        if (existing) {
+          existing.count = (existing.count || 1) + cardData.count;
+        } else {
+          deck.cards.push(cardData);
+        }
+
+        const pct = Math.round(((i + 1) / parsedCards.length) * 100);
+        progressBarFill.style.width = `${pct}%`;
+        progressPercentage.textContent = `${pct}%`;
+      }
+
+      saveDecksToStorage();
+      updateDeckSelector();
+      updateDeckUI();
+
+      progressStatusText.textContent = '모든 카드가 덱에 성공적으로 추가되었습니다!';
+      setTimeout(() => {
+        progressModal.classList.add('hidden');
+        showModal('등록 완료', `<p class="text-xs text-emerald-600 font-bold">총 ${parsedCards.length}종의 카드가 <strong>'${deck.name}'</strong>에 성공적으로 일괄 등록되었습니다!<br>우측 하단의 <span class="text-indigo-600 font-black">'덱 이미지 일괄 ZIP 다운로드'</span>로 바로 출력하실 수 있습니다.</p>`, null);
+      }, 500);
     });
 
     loadDeckFileTrigger.addEventListener('click', () => {
